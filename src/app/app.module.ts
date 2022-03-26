@@ -7,6 +7,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {PagesModule} from "./pages/pages.module";
 import {HttpClientModule} from "@angular/common/http";
 import {MatToolbarModule} from "@angular/material/toolbar";
+import {MenuHeaderModule} from "./shared/menu-header/menu-header.module";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {MatToolbarModule} from "@angular/material/toolbar";
     PagesModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MenuHeaderModule
   ],
   providers: [],
   bootstrap: [AppComponent]

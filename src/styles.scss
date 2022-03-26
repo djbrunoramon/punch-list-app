@@ -1,4 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@import "./config-scss/variables";
+@import "./config-scss/reset";
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: var(--background-color);
+}
+
+.container {
+  padding: 1rem 1rem;
+}
