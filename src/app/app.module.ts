@@ -6,22 +6,24 @@ import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {PagesModule} from "./pages/pages.module";
 import {HttpClientModule} from "@angular/common/http";
-import {MatToolbarModule} from "@angular/material/toolbar";
+import {SharedModule} from "./shared/shared.module";
+import {AppMaterialModule} from "./shared/app-material/app-material.module";
 import {MenuHeaderModule} from "./shared/menu-header/menu-header.module";
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    PagesModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    MatToolbarModule,
-    MenuHeaderModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        PagesModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        SharedModule,
+        AppMaterialModule,
+        MenuHeaderModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

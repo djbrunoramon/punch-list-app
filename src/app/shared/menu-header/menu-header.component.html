@@ -1,8 +1,8 @@
-<div class="menu">
+<mat-toolbar class="menu">
   <a mat-button routerLink="/">Home</a>
   <button mat-button [matMenuTriggerFor]="menuRegister">Register</button>
   <mat-menu #menuRegister="matMenu">
     <a mat-menu-item routerLink="/contract">Contract</a>
     <a mat-menu-item routerLink="/responsible-person">Responsible Person</a>
   </mat-menu>
-</div>
+</mat-toolbar>
