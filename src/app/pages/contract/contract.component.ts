@@ -1,16 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-export interface IContract {
-  id: number;
-  contract: string;
-  description: string;
-  address: string;
-}
-
-const ELEMENT_DATA: IContract[] = [
-  {id: 1, contract: 'BR-2022-1020', description: "Power Plant BR-1020", address: 'Fortaleza-BR'},
-  {id: 2, contract: 'US-2022-1130', description: "Power Plant US-1130", address: 'Texas-USA'},
-];
+import {ContractService} from "../services/contract.service";
+import {IContract} from "../model/contract";
 
 @Component({
   selector: 'app-contract',
@@ -19,12 +9,22 @@ const ELEMENT_DATA: IContract[] = [
 })
 export class ContractComponent implements OnInit {
 
-  displayedColumns: string[] = ['id', 'contract', 'description', 'address'];
-  dataSource = ELEMENT_DATA;
+  public contracts: IContract[] = [];
+  public displayedColumns: string[] = ['id', 'numberContract', 'description', 'address', 'action'];
+  public dataSource: IContract[] = [];
 
-  constructor() { }
+  constructor(
+    private contractService: ContractService
+  ) { }
 
   ngOnInit(): void {
+    this.getAllContracts();
   }
 
+  private getAllContracts(): void {
+    this.contractService.getAllContract().subscribe(data => {
+      this.contracts = data;
+      this.dataSource = this.contracts;
+    });
+  }
 }

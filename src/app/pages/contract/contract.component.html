@@ -1,6 +1,6 @@
 <div class="contract">
-
   <div class="container">
+      <h2>Contract</h2>
       <button mat-raised-button>New Contract</button>
 
       <div class="table-contract">
@@ -12,9 +12,9 @@
           </ng-container>
 
 
-          <ng-container matColumnDef="contract">
+          <ng-container matColumnDef="numberContract">
             <th mat-header-cell *matHeaderCellDef> Contract </th>
-            <td mat-cell *matCellDef="let element"> {{element.contract}} </td>
+            <td mat-cell *matCellDef="let element"> {{element.numberContract}} </td>
           </ng-container>
 
 
@@ -26,6 +26,15 @@
           <ng-container matColumnDef="address">
             <th mat-header-cell *matHeaderCellDef> Address </th>
             <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef> Action </th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-button>
+                <mat-icon aria-hidden="false" routerLink="/contract/{{element.id}}">edit</mat-icon>
+              </button>
+            </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

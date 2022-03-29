@@ -14,6 +14,10 @@ const routes: Routes = [
     component: ContractComponent
   },
   {
+    path: 'contract/:id',
+    component: ContractComponent
+  },
+  {
     path: 'responsible-person',
     component: ResponsiblePersonComponent
   }

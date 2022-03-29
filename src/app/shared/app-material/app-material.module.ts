@@ -7,6 +7,7 @@ import {MatDividerModule} from "@angular/material/divider"
 import {MatTableModule} from '@angular/material/table';
 import {CdkTableModule} from '@angular/cdk/table';
 import {MatCommonModule} from '@angular/material/core';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   exports: [
@@ -17,7 +18,8 @@ import {MatCommonModule} from '@angular/material/core';
     MatDividerModule,
     MatTableModule,
     CdkTableModule,
-    MatCommonModule
+    MatCommonModule,
+    MatIconModule
   ]
 })
 export class AppMaterialModule { }
