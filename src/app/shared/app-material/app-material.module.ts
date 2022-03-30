@@ -8,7 +8,9 @@ import {MatTableModule} from '@angular/material/table';
 import {CdkTableModule} from '@angular/cdk/table';
 import {MatCommonModule} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
-
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from "@angular/material/input";
+import {MatSelectModule} from '@angular/material/select';
 @NgModule({
   exports: [
     MatToolbarModule,
@@ -19,7 +21,10 @@ import {MatIconModule} from '@angular/material/icon';
     MatTableModule,
     CdkTableModule,
     MatCommonModule,
-    MatIconModule
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule
   ]
 })
 export class AppMaterialModule { }
