@@ -8,32 +8,33 @@
           <div class="row">
             <mat-form-field class="contract-registration-field" >
               <mat-label>Contract</mat-label>
-              <input matInput>
+              <input matInput [value]="contract?.numberContract">
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field">
               <mat-label>Description</mat-label>
-              <input matInput>
+              <input matInput [value]="contract?.description">
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field" >
               <mat-label>Start At</mat-label>
-              <input matInput>
+              <input matInput [value]="moment(contract?.startAt).format(formatDateTime)">
+<!--              <input matInput [value]="contract?.startAt">-->
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field">
               <mat-label>Scheduled To</mat-label>
-              <input matInput>
+              <input matInput [value]="contract?.scheduledTo">
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field" >
               <mat-label>Address</mat-label>
-              <input matInput>
+              <input matInput [value]="contract?.address">
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field">
               <mat-label>Estimated At</mat-label>
-              <input matInput>
+              <input matInput [value]="contract?.estimatedAt">
             </mat-form-field>
           </div>
           <div class="row">
