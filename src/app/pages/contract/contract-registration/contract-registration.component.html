@@ -4,41 +4,46 @@
 
     <mat-card>
       <mat-card-content>
-        <form class="contract-registration-form">
+        <form [formGroup]="formGroup" *ngIf="formGroup" class="contract-registration-form">
           <div class="row">
             <mat-form-field class="contract-registration-field" >
               <mat-label>Contract</mat-label>
-              <input matInput [value]="contract?.numberContract">
+              <input matInput formControlName="numberContract">
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field">
               <mat-label>Description</mat-label>
-              <input matInput [value]="contract?.description">
+              <input matInput formControlName="description">
             </mat-form-field>
 
-            <mat-form-field class="contract-registration-field" >
+            <mat-form-field class="contract-registration-field">
               <mat-label>Start At</mat-label>
-              <input matInput [value]="moment(contract?.startAt).format(formatDateTime)">
-<!--              <input matInput [value]="contract?.startAt">-->
+              <input matInput [matDatepicker]="pickerStartAt" formControlName="startAt">
+              <mat-datepicker-toggle matSuffix [for]="pickerStartAt"></mat-datepicker-toggle>
+              <mat-datepicker #pickerStartAt></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field">
               <mat-label>Scheduled To</mat-label>
-              <input matInput [value]="contract?.scheduledTo">
+              <input matInput [matDatepicker]="pickerScheduledTo" [min]="contract?.startAt" formControlName="scheduledTo">
+              <mat-datepicker-toggle matSuffix [for]="pickerScheduledTo"></mat-datepicker-toggle>
+              <mat-datepicker #pickerScheduledTo></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field" >
               <mat-label>Address</mat-label>
-              <input matInput [value]="contract?.address">
+              <input matInput formControlName="address">
             </mat-form-field>
 
             <mat-form-field class="contract-registration-field">
               <mat-label>Estimated At</mat-label>
-              <input matInput [value]="contract?.estimatedAt">
+              <input class="contract-registration-estimated-at" currencyMask matInput formControlName="estimatedAt">
             </mat-form-field>
           </div>
           <div class="row">
-            <button mat-raised-button color="primary">Save</button>
+            <button mat-raised-button color="primary" (click)="save()"
+              [disabled]="formGroup.invalid"
+            >Save</button>
           </div>
         </form>
       </mat-card-content>

@@ -7,11 +7,6 @@
       <div class="table-contract">
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z3">
 
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> No. </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
           <ng-container matColumnDef="numberContract">
             <th mat-header-cell *matHeaderCellDef> Contract </th>
             <td mat-cell *matCellDef="let element"> {{element.numberContract}} </td>
@@ -22,6 +17,13 @@
             <td mat-cell *matCellDef="let element"> {{element.description}} </td>
           </ng-container>
 
+          <ng-container matColumnDef="startAt">
+            <th mat-header-cell *matHeaderCellDef> Start At </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.startAt ? moment(element.startAt).format(formatDate) : '-' }}
+            </td>
+          </ng-container>
+
           <ng-container matColumnDef="address">
             <th mat-header-cell *matHeaderCellDef> Address </th>
             <td mat-cell *matCellDef="let element"> {{element.address}} </td>
@@ -30,8 +32,8 @@
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef> Action </th>
             <td mat-cell *matCellDef="let element">
-              <button mat-button>
-                <mat-icon aria-hidden="false" routerLink="/contract/{{element.id}}">edit</mat-icon>
+              <button mat-button routerLink="/contract/{{element.id}}">
+                <mat-icon aria-hidden="false">edit</mat-icon>
               </button>
             </td>
           </ng-container>
