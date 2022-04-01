@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 })
 export class ContractService {
 
-  private readonly URL_API: string = 'v1/contract';
+  private readonly URL_API: string = 'api/v1/contract';
 
   constructor(private http: HttpClient) { }
 
@@ -18,5 +18,13 @@ export class ContractService {
 
   public getContractById(id: number): Observable<Contract> {
     return this.http.get<Contract>(`${this.URL_API}/${id}`);
+  }
+
+  public updateContract(id: number, contract: Contract): Observable<any> {
+    return this.http.put<any>(`${this.URL_API}/${id}`, contract);
+  }
+
+  public saveContract(contract: Contract): Observable<any> {
+    return this.http.post<any>(`${this.URL_API}`, contract);
   }
 }

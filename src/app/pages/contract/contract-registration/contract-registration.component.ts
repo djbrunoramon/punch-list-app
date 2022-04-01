@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ContractService} from "../../services/contract.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Contract} from "../../model/contract";
 import * as moment from 'moment/moment';
 import 'moment/locale/pt-br';
+import 'moment/locale/en-in';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter,} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 
@@ -25,7 +26,7 @@ export const MY_FORMATS = {
   templateUrl: './contract-registration.component.html',
   styleUrls: ['./contract-registration.component.scss'],
   providers: [
-    {provide: MAT_DATE_LOCALE, useValue: 'pt-BR'},
+    {provide: MAT_DATE_LOCALE, useValue: 'en-in'},
     {
       provide: DateAdapter,
       useClass: MomentDateAdapter,
@@ -36,21 +37,26 @@ export const MY_FORMATS = {
 })
 export class ContractRegistrationComponent implements OnInit {
 
-  public formatDateTime = "DD/MM/YYYY";
   public moment = moment;
   public contract!: Contract;
   public formGroup!: FormGroup;
-  private idContract!: number;
+  private idContract = undefined;
 
   constructor(
     private activateRoute: ActivatedRoute,
     private contractService: ContractService,
-    private formBuilder: FormBuilder
-  ) { }
+    private formBuilder: FormBuilder,
+    private route: Router
+  ) {
+  }
 
   ngOnInit(): void {
     this.idContract = this.activateRoute.snapshot.params['id'];
-    this.getContractById(this.idContract);
+    if (this.idContract && this.idContract > 0) {
+      this.getContractById(this.idContract);
+    } else {
+      this.builderForm(new Contract());
+    }
   }
 
   public getContractById(id: number): void {
@@ -62,12 +68,38 @@ export class ContractRegistrationComponent implements OnInit {
 
   public builderForm(contract: Contract): void {
     this.formGroup = this.formBuilder.group({
-      numberContract: [this.contract?.numberContract, Validators.required],
+      numberContract: [this.contract?.numberContract, [Validators.required, Validators.pattern(/[\S]/)]],
       description: [this.contract?.description, Validators.required],
+      startAt: [this.contract?.startAt],
+      scheduledTo: [this.contract?.scheduledTo ? this.contract?.scheduledTo : ''],
+      address: [this.contract?.address, Validators.required],
+      estimatedAt: [this.contract?.estimatedAt],
     })
   }
 
-  public saveContract(): void {
-    console.log(this.formGroup.value);
+  public save(): void {
+    if (this.idContract && this.idContract > 0) {
+      this.updateContract();
+    } else {
+      this.saveContract();
+    }
+  }
+
+  private saveContract(): void {
+    this.contractService.saveContract(this.formGroup.value).subscribe(
+      data => this.navidateGetAllContracts()
+    );
+  }
+
+  private updateContract(): void {
+    if (this.idContract) {
+      this.contractService.updateContract(this.idContract, this.formGroup.value).subscribe(
+        data => this.navidateGetAllContracts()
+      );
+    }
+  }
+
+  private navidateGetAllContracts() {
+    this.route.navigate([`/contract`]);
   }
 }
