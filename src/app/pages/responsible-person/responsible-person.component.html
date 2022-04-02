@@ -4,8 +4,8 @@
 
     <button mat-raised-button routerLink="/responsible-person/new">New Responsible Person</button>
 
-    <div class="table-responsible-person">
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z3">
+    <div class="table-responsible-person mat-elevation-z3">
+      <table mat-table [dataSource]="dataSource" >
 
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef> Name </th>
@@ -43,17 +43,13 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      <mat-divider></mat-divider>
-      <br>
       <mat-paginator [length]="lengthPaginator"
                      [pageSize]="pageSizePaginator"
                      [pageIndex]=""
                      [pageSizeOptions]="pageSizeOptions"
-                     (page)="pageEvent = $event"
+                     (page)="pageEvent = $event; getAllResponsiblePersonPage()"
                      aria-label="Select page">
       </mat-paginator>
-
-
     </div>
   </div>
 

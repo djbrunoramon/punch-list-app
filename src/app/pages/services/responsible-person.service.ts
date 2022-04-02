@@ -16,6 +16,10 @@ export class ResponsiblePersonService {
     return this.http.get<ResponsiblePerson[]>(`${this.URL_API}/contract/${idContract}`);
   }
 
+  public getAllResponsiblePersonPage(idContract: number, page: string): Observable<any> {
+    return this.http.get<ResponsiblePerson[]>(`${this.URL_API}/contract/${idContract}?${page}`);
+  }
+
   public getResponsiblePersonById(id: number): Observable<ResponsiblePerson> {
     return this.http.get<ResponsiblePerson>(`${this.URL_API}/${id}`);
   }
