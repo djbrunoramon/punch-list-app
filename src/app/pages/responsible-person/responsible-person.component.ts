@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ResponsiblePersonService} from "../services/responsible-person.service";
+import {IResponsiblePerson} from "../model/responsible-person";
 
 @Component({
   selector: 'app-responsible-person',
@@ -7,9 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ResponsiblePersonComponent implements OnInit {
 
-  constructor() { }
+  public displayedColumns: string[] = ['name', 'department', 'occupation', 'active', 'action'];
+  public responsiblePersonList: IResponsiblePerson[] = [];
+  public dataSource: IResponsiblePerson[] = [];
+
+  constructor(private responsiblePersonService: ResponsiblePersonService) { }
 
   ngOnInit(): void {
+    this.getAllResponsiblePerson();
   }
 
+  public getAllResponsiblePerson(): void {
+    this.responsiblePersonService.getAllResponsiblePerson(1)
+      .subscribe(data => {
+        this.dataSource = data.content
+        this.responsiblePersonList = data.content;
+    });
+  }
 }

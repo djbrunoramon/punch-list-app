@@ -4,7 +4,6 @@ import {ContractService} from "../../services/contract.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Contract} from "../../model/contract";
 import * as moment from 'moment/moment';
-import 'moment/locale/pt-br';
 import 'moment/locale/en-in';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter,} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
