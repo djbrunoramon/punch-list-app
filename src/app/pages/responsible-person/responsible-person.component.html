@@ -43,6 +43,16 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+      <mat-divider></mat-divider>
+      <br>
+      <mat-paginator [length]="lengthPaginator"
+                     [pageSize]="pageSizePaginator"
+                     [pageIndex]=""
+                     [pageSizeOptions]="pageSizeOptions"
+                     (page)="pageEvent = $event"
+                     aria-label="Select page">
+      </mat-paginator>
+
 
     </div>
   </div>
