@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {ResponsiblePerson} from "../model/responsible-person";
 import {Observable} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResponsiblePersonService {
 
-  private readonly URL_API: string = 'api/v1/responsible-person';
+  private readonly API: string = environment.backend.baseURL;
+  private readonly URL_API: string = this.API + '/api/v1/responsible-person';
 
   constructor(private http: HttpClient) { }
 

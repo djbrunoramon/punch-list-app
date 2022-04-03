@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Contract} from "../model/contract";
 import {Observable} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractService {
 
-  private readonly URL_API: string = 'api/v1/contract';
+  private readonly API: string = environment.backend.baseURL;
+  private readonly URL_API: string = this.API + '/api/v1/contract';
 
   constructor(private http: HttpClient) { }
 

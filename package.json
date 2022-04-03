@@ -21,6 +21,7 @@
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
+    "http-server": "^14.1.0",
     "moment": "^2.29.1",
     "ng2-currency-mask": "^13.0.3",
     "rxjs": "~7.4.0",
