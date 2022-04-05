@@ -4,6 +4,9 @@ import {HomeComponent} from "./home/home.component";
 import {ContractComponent} from "./contract/contract.component";
 import {ResponsiblePersonComponent} from "./responsible-person/responsible-person.component";
 import {ContractRegistrationComponent} from "./contract/contract-registration/contract-registration.component";
+import {
+  ResponsiblePersonRegistrationComponent
+} from "./responsible-person/responsible-person-registration/responsible-person-registration.component";
 
 const routes: Routes = [
   {
@@ -21,6 +24,10 @@ const routes: Routes = [
   {
     path: 'responsible-person',
     component: ResponsiblePersonComponent
+  },
+  {
+    path: 'responsible-person/:id',
+    component: ResponsiblePersonRegistrationComponent
   }
 ];
 

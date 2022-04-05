@@ -14,7 +14,7 @@ export class ResponsiblePersonComponent implements OnInit {
   public lengthPaginator!: number;
   public pageSizePaginator: number = 10;
   public pageIndexPaginator: number = 0;
-  public pageSizeOptions: number[] = [1, 2, 10, 25, 100];
+  public pageSizeOptions: number[] = [10, 25, 100];
   public pageEvent!: PageEvent;
   public pageFilter?: string;
 

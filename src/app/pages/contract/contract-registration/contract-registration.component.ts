@@ -54,18 +54,18 @@ export class ContractRegistrationComponent implements OnInit {
     if (this.idContract && this.idContract > 0) {
       this.getContractById(this.idContract);
     } else {
-      this.builderForm(new Contract());
+      this.builderForm();
     }
   }
 
   public getContractById(id: number): void {
     this.contractService.getContractById(id).subscribe(data => {
       this.contract = data;
-      this.builderForm(data);
+      this.builderForm();
     });
   }
 
-  public builderForm(contract: Contract): void {
+  public builderForm(): void {
     this.formGroup = this.formBuilder.group({
       numberContract: [this.contract?.numberContract, [Validators.required, Validators.pattern(/[\S]/)]],
       description: [this.contract?.description, Validators.required],

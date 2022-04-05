@@ -1,0 +1,34 @@
+<div class="responsible-person-registration">
+  <div class="container">
+    <h2>Responsible Person Registration</h2>
+
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="formGroup" *ngIf="formGroup" class="form">
+          <div class="row">
+            <mat-form-field class="form-field" >
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name">
+            </mat-form-field>
+
+            <mat-form-field class="form-field" >
+              <mat-label>Occupation</mat-label>
+              <input matInput formControlName="occupation">
+            </mat-form-field>
+
+            <mat-form-field class="form-field" >
+              <mat-label>Department</mat-label>
+              <input matInput formControlName="department">
+            </mat-form-field>
+
+          </div>
+          <div class="row">
+            <button mat-raised-button color="primary" (click)="save()"
+                    [disabled]="formGroup.invalid"
+            >Save</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
