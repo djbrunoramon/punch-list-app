@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {ResponsiblePerson} from "../model/responsible-person";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
+import {ResponsiblePersonDto} from "../model/responsible-person-dto";
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +27,11 @@ export class ResponsiblePersonService {
     return this.http.get<ResponsiblePerson>(`${this.URL_API}/${id}`);
   }
 
-  public updateResponsiblePerson(id: number, responsiblePerson: ResponsiblePerson): Observable<ResponsiblePerson> {
+  public updateResponsiblePerson(id: number, responsiblePerson: ResponsiblePersonDto): Observable<ResponsiblePerson> {
     return this.http.put<any>(`${this.URL_API}/${id}`, responsiblePerson);
   }
 
-  public saveResponsiblePerson(responsiblePerson: ResponsiblePerson): Observable<ResponsiblePerson> {
+  public saveResponsiblePerson(responsiblePerson: ResponsiblePersonDto): Observable<ResponsiblePerson> {
     return this.http.post<any>(`${this.URL_API}`, responsiblePerson);
   }
 }

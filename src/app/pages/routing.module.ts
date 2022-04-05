@@ -7,6 +7,7 @@ import {ContractRegistrationComponent} from "./contract/contract-registration/co
 import {
   ResponsiblePersonRegistrationComponent
 } from "./responsible-person/responsible-person-registration/responsible-person-registration.component";
+import {PendencyComponent} from "./pendency/pendency.component";
 
 const routes: Routes = [
   {
@@ -28,6 +29,10 @@ const routes: Routes = [
   {
     path: 'responsible-person/:id',
     component: ResponsiblePersonRegistrationComponent
+  },
+  {
+    path: 'pendency',
+    component: PendencyComponent
   }
 ];
 

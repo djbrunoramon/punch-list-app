@@ -1,0 +1,68 @@
+<div class="pendency">
+  <div class="container">
+    <h2>Pendency</h2>
+
+    <button mat-raised-button routerLink="/pendency/new">New Pendency</button>
+
+    <div class="table-pendency mat-elevation-z3">
+      <table mat-table [dataSource]="dataSource" >
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tag">
+          <th mat-header-cell *matHeaderCellDef> Tag </th>
+          <td mat-cell *matCellDef="let element"> {{element.tag}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="areaIdentification">
+          <th mat-header-cell *matHeaderCellDef> Area </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.areaIdentification }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef> Description </th>
+          <td mat-cell *matCellDef="let element">
+            {{element.description}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef> Created At </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.createdAt ? moment(element.createdAt).format(formatDate) : '-' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let element">
+            {{element.status}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Action </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-button routerLink="/pendency/{{element?.id}}" title="Edit">
+              <mat-icon aria-hidden="false">edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [length]="lengthPaginator"
+                     [pageSize]="pageSizePaginator"
+                     [pageSizeOptions]="pageSizeOptions"
+                     (page)="pageEvent = $event; getAllPendency()"
+                     aria-label="Select page">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

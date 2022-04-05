@@ -45,7 +45,7 @@
       </table>
       <mat-paginator [length]="lengthPaginator"
                      [pageSize]="pageSizePaginator"
-                     [pageIndex]=""
+                     [pageIndex]="pageIndexPaginator"
                      [pageSizeOptions]="pageSizeOptions"
                      (page)="pageEvent = $event; getAllResponsiblePersonPage()"
                      aria-label="Select page">

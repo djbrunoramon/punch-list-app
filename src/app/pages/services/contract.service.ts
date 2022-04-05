@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {Contract} from "../model/contract";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
+import {ContractDto} from "../model/contract-dto";
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +23,11 @@ export class ContractService {
     return this.http.get<Contract>(`${this.URL_API}/${id}`);
   }
 
-  public updateContract(id: number, contract: Contract): Observable<any> {
+  public updateContract(id: number, contract: ContractDto): Observable<any> {
     return this.http.put<any>(`${this.URL_API}/${id}`, contract);
   }
 
-  public saveContract(contract: Contract): Observable<any> {
+  public saveContract(contract: ContractDto): Observable<any> {
     return this.http.post<any>(`${this.URL_API}`, contract);
   }
 }
