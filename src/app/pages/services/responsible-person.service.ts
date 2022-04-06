@@ -16,7 +16,7 @@ export class ResponsiblePersonService {
   constructor(private http: HttpClient) { }
 
   public getAllResponsiblePerson(idContract: number): Observable<any> {
-    return this.http.get<ResponsiblePerson[]>(`${this.URL_API}/contract/${idContract}`);
+    return this.http.get<ResponsiblePerson[]>(`${this.URL_API}/contract/${idContract}?sort=name,asc`);
   }
 
   public getAllResponsiblePersonPage(idContract: number, page: string): Observable<any> {

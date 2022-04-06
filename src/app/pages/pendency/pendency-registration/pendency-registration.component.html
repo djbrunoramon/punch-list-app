@@ -1,0 +1,126 @@
+<div class="pendency-registration">
+  <div class="container">
+    <h2>Pendency Registration</h2>
+
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="formGroup" *ngIf="formGroup" class="pendency-registration-form">
+          <div class="row">
+            <mat-form-field class="pendency-registration-field" >
+              <mat-label>Area Identification</mat-label>
+              <input matInput formControlName="areaIdentification">
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Tag</mat-label>
+              <input matInput formControlName="tag">
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Description</mat-label>
+              <input matInput formControlName="description">
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Priority</mat-label>
+              <input matInput formControlName="priority">
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="status">
+                <mat-option *ngFor="let status of listStatusEnum()" [value]="status">
+                  {{ status }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Discipline</mat-label>
+              <input matInput formControlName="discipline">
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Registered By</mat-label>
+              <mat-select formControlName="registeredBy">
+                <mat-option *ngFor="let rp of responsiblePerson" [value]="rp.id">
+                  {{ rp.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Registered To</mat-label>
+              <mat-select formControlName="registeredTo">
+                <mat-option *ngFor="let rp of responsiblePerson" [value]="rp.id">
+                  {{ rp.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Expected In</mat-label>
+              <input matInput [matDatepicker]="pickerExpectedIn" formControlName="expectedIn">
+              <mat-datepicker-toggle matSuffix [for]="pickerExpectedIn"></mat-datepicker-toggle>
+              <mat-datepicker #pickerExpectedIn></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Finished By</mat-label>
+              <mat-select formControlName="finishedBy">
+                <mat-option *ngFor="let rp of responsiblePerson" [value]="rp.id">
+                  {{ rp.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Finished At</mat-label>
+              <input matInput [matDatepicker]="pickerFinishedAt" formControlName="finishedAt">
+              <mat-datepicker-toggle matSuffix [for]="pickerFinishedAt"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFinishedAt></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Disapproved By</mat-label>
+              <mat-select formControlName="disapprovedBy">
+                <mat-option *ngFor="let rp of responsiblePerson" [value]="rp.id">
+                  {{ rp.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Disapproved At</mat-label>
+              <input matInput [matDatepicker]="pickerDisapprovedAt" formControlName="disapprovedAt">
+              <mat-datepicker-toggle matSuffix [for]="pickerDisapprovedAt"></mat-datepicker-toggle>
+              <mat-datepicker #pickerDisapprovedAt></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Canceled By</mat-label>
+              <mat-select formControlName="canceledBy">
+                <mat-option *ngFor="let rp of responsiblePerson" [value]="rp.id">
+                  {{ rp.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="pendency-registration-field">
+              <mat-label>Canceled At</mat-label>
+              <input matInput [matDatepicker]="pickerCanceledAt" formControlName="canceledAt">
+              <mat-datepicker-toggle matSuffix [for]="pickerCanceledAt"></mat-datepicker-toggle>
+              <mat-datepicker #pickerCanceledAt></mat-datepicker>
+            </mat-form-field>
+
+          </div>
+          <div class="row">
+            <button mat-raised-button color="primary" (click)="save()"
+                    [disabled]="formGroup.invalid"
+            >Save</button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

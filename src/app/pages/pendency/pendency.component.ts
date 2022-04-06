@@ -14,7 +14,7 @@ export class PendencyComponent implements OnInit {
   public formatDate = 'YYYY-MM-DD';
   public moment = moment;
 
-  public displayedColumns: string[] = ['id', 'tag', 'areaIdentification', 'description', 'createdAt', 'status', 'action'];
+  public displayedColumns: string[] = ['id', 'tag', 'areaIdentification', 'description', 'registeredBy','createdAt', 'status', 'action'];
   public lengthPaginator!: number;
   public pageSizePaginator: number = 10;
   public pageIndexPaginator: number = 0;

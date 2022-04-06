@@ -8,6 +8,7 @@ import {
   ResponsiblePersonRegistrationComponent
 } from "./responsible-person/responsible-person-registration/responsible-person-registration.component";
 import {PendencyComponent} from "./pendency/pendency.component";
+import {PendencyRegistrationComponent} from "./pendency/pendency-registration/pendency-registration.component";
 
 const routes: Routes = [
   {
@@ -33,6 +34,10 @@ const routes: Routes = [
   {
     path: 'pendency',
     component: PendencyComponent
+  },
+  {
+    path: 'pendency/:id',
+    component: PendencyRegistrationComponent
   }
 ];
 
