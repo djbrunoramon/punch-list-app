@@ -4,8 +4,8 @@
 
       <button mat-raised-button routerLink="/contract/new">New Contract</button>
 
-      <div class="table-contract">
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z3">
+      <div class="table-contract mat-elevation-z3">
+        <table mat-table [dataSource]="dataSource" class="">
 
           <ng-container matColumnDef="numberContract">
             <th mat-header-cell *matHeaderCellDef> Contract </th>
@@ -41,7 +41,11 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-
+        <ng-template [ngIf]="dataSource.length === 0">
+          <div class="no-data">
+            No data registered
+          </div>
+        </ng-template>
       </div>
   </div>
 
