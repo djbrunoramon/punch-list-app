@@ -9,3 +9,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
 .container {
   padding: 0rem 1rem;
 }
+
+.no-data {
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 400;
+  background-color: #FFFFFF;
+}

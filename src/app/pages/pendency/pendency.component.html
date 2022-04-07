@@ -64,12 +64,18 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      <mat-paginator [length]="lengthPaginator"
+      <mat-paginator *ngIf="!(dataSource.length === 0)" [length]="lengthPaginator"
                      [pageSize]="pageSizePaginator"
                      [pageSizeOptions]="pageSizeOptions"
                      (page)="pageEvent = $event; getAllPendency()"
                      aria-label="Select page">
       </mat-paginator>
+
+      <ng-template [ngIf]="dataSource.length === 0">
+        <div class="no-data">
+          No data registered
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>
