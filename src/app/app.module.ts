@@ -9,21 +9,23 @@ import {HttpClientModule} from "@angular/common/http";
 import {SharedModule} from "./shared/shared.module";
 import {AppMaterialModule} from "./shared/app-material/app-material.module";
 import {MenuHeaderModule} from "./shared/menu-header/menu-header.module";
+import {LoadingBarCustomModule} from "./shared/loading/loading-bar-custom/loading-bar-custom.module";
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        PagesModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
-        SharedModule,
-        AppMaterialModule,
-        MenuHeaderModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    PagesModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    SharedModule,
+    AppMaterialModule,
+    MenuHeaderModule,
+    LoadingBarCustomModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

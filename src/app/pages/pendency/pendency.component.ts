@@ -3,6 +3,7 @@ import {PageEvent} from "@angular/material/paginator";
 import {IPendency} from "../model/pendency";
 import {PendencyService} from "../services/pendency.service";
 import * as moment from "moment";
+import {LoadingBarService} from "@ngx-loading-bar/core";
 
 @Component({
   selector: 'app-pendency',
@@ -24,9 +25,11 @@ export class PendencyComponent implements OnInit {
 
   public dataSource: IPendency[] = [];
   public pendencyList: IPendency[] = [];
+  private loader = this.loadingBarService.useRef();
 
   constructor(
-    private pendencyService: PendencyService
+    private pendencyService: PendencyService,
+    private loadingBarService: LoadingBarService
   ) { }
 
   ngOnInit(): void {
@@ -34,6 +37,7 @@ export class PendencyComponent implements OnInit {
   }
 
   public getAllPendency(init?: boolean): void {
+    this.loader.start();
     if (init) {
       this.pageFilter = `sort=id,asc&size=${this.pageSizePaginator}&page=${this.pageIndexPaginator}`
     } else {
@@ -50,7 +54,9 @@ export class PendencyComponent implements OnInit {
 
         this.dataSource = data.content;
         this.pendencyList = data.content;
-      }
+
+        this.loader.complete();
+      }, () => this.loader.stop()
     )
   }
 }

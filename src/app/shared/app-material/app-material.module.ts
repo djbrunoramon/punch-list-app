@@ -14,6 +14,8 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from "@angular/material/core";
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 @NgModule({
   exports: [
     MatToolbarModule,
@@ -30,7 +32,9 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule
   ]
 })
 export class AppMaterialModule { }

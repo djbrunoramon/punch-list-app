@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ResponsiblePerson} from "../../model/responsible-person";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ResponsiblePersonService} from "../../services/responsible-person.service";
+import {LoadingBarService} from "@ngx-loading-bar/core";
 
 @Component({
   selector: 'app-responsible-person-registration',
@@ -14,12 +15,14 @@ export class ResponsiblePersonRegistrationComponent implements OnInit {
   public formGroup!: FormGroup;
   public responsiblePerson!: ResponsiblePerson;
   public idResponsiblePerson!: number;
+  private loader = this.loadingBarService.useRef();
 
   constructor(
     private formBuilder: FormBuilder,
     private activateRoute: ActivatedRoute,
     private responsiblePersonService: ResponsiblePersonService,
-    private router: Router
+    private router: Router,
+    private loadingBarService: LoadingBarService
   ) {
   }
 
@@ -50,11 +53,13 @@ export class ResponsiblePersonRegistrationComponent implements OnInit {
   }
 
   private getResponsiblePersonById(id: number) {
+    this.loader.start();
     this.responsiblePersonService.getResponsiblePersonById(id).subscribe(
       data => {
         this.responsiblePerson = data;
         this.builderForm();
-      }
+        this.loader.complete();
+      }, () => this.loader.stop()
     );
   }
 

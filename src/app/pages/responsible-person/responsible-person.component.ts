@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ResponsiblePersonService} from "../services/responsible-person.service";
 import {IResponsiblePerson} from "../model/responsible-person";
 import {PageEvent} from "@angular/material/paginator";
+import {LoadingBarService} from "@ngx-loading-bar/core";
 
 @Component({
   selector: 'app-responsible-person',
@@ -20,8 +21,10 @@ export class ResponsiblePersonComponent implements OnInit {
 
   public responsiblePersonList: IResponsiblePerson[] = [];
   public dataSource: IResponsiblePerson[] = [];
+  private loader = this.loadingBarService.useRef();
 
-  constructor(private responsiblePersonService: ResponsiblePersonService) { }
+  constructor(private responsiblePersonService: ResponsiblePersonService,
+              private loadingBarService: LoadingBarService) { }
 
   ngOnInit(): void {
     this.getAllResponsiblePersonPage(true);
@@ -40,6 +43,7 @@ export class ResponsiblePersonComponent implements OnInit {
   }
 
   public getAllResponsiblePersonPage(init?: boolean): void {
+    this.loader.start();
     if (init) {
       this.pageFilter = 'sort=name,asc';
     } else {
@@ -56,6 +60,7 @@ export class ResponsiblePersonComponent implements OnInit {
 
         this.dataSource = data.content
         this.responsiblePersonList = data.content;
-      });
+        this.loader.complete();
+      }, () => this.loader.stop());
   }
 }

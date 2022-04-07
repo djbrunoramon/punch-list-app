@@ -8,6 +8,7 @@ import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter} from "@angular/mater
 import {PendencyStatus} from "../../model/pendency-status";
 import {ResponsiblePersonService} from "../../services/responsible-person.service";
 import {ResponsiblePerson} from "../../model/responsible-person";
+import {LoadingBarService} from "@ngx-loading-bar/core";
 
 export const MY_FORMATS = {
   parse: {
@@ -41,12 +42,14 @@ export class PendencyRegistrationComponent implements OnInit {
   public pendency!: Pendency;
   public idPendency!: number;
   public responsiblePerson: ResponsiblePerson[] = [];
+  private loader = this.loadingBarService.useRef();
 
   constructor(private formBuilder: FormBuilder,
               private pendencyService: PendencyService,
               private activateRoute: ActivatedRoute,
               private router: Router,
-              private responsiblePersonService: ResponsiblePersonService) { }
+              private responsiblePersonService: ResponsiblePersonService,
+              private loadingBarService: LoadingBarService) { }
 
   ngOnInit(): void {
     this.idPendency = this.activateRoute.snapshot.params['id'];
@@ -93,11 +96,13 @@ export class PendencyRegistrationComponent implements OnInit {
   }
 
   private getPendencyById(id: number) {
+    this.loader.start();
     this.pendencyService.getPendencyById(id).subscribe(
       data => {
         this.pendency = data;
         this.builderForm();
-      }
+        this.loader.complete();
+      }, () => this.loader.stop()
     );
   }
 
@@ -121,7 +126,6 @@ export class PendencyRegistrationComponent implements OnInit {
     this.responsiblePersonService.getAllResponsiblePerson(1).subscribe(
       data => {
         this.responsiblePerson = data.content
-        console.log(data.content);
       }
     );
   }

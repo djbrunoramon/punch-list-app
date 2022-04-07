@@ -7,6 +7,7 @@ import * as moment from 'moment/moment';
 import 'moment/locale/en-in';
 import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter,} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import {LoadingBarService} from "@ngx-loading-bar/core";
 
 export const MY_FORMATS = {
   parse: {
@@ -40,12 +41,14 @@ export class ContractRegistrationComponent implements OnInit {
   public contract!: Contract;
   public formGroup!: FormGroup;
   private idContract = undefined;
+  private loader = this.loadingBarService.useRef();
 
   constructor(
     private activateRoute: ActivatedRoute,
     private contractService: ContractService,
     private formBuilder: FormBuilder,
-    private route: Router
+    private route: Router,
+    private loadingBarService: LoadingBarService
   ) {
   }
 
@@ -59,10 +62,13 @@ export class ContractRegistrationComponent implements OnInit {
   }
 
   public getContractById(id: number): void {
+    this.loader.start();
     this.contractService.getContractById(id).subscribe(data => {
       this.contract = data;
       this.builderForm();
-    });
+
+      this.loader.complete();
+    }, () => this.loader.stop());
   }
 
   public builderForm(): void {
