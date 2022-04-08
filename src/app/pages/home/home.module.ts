@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {HomeComponent} from './home.component';
 import {AppMaterialModule} from "../../shared/app-material/app-material.module";
 import {SharedModule} from "../../shared/shared.module";
+import {ChartPiePendencyByStatusModule} from "./chart-pie-pendency-by-status/chart-pie-pendency-by-status.module";
 
 
 @NgModule({
@@ -11,7 +12,9 @@ import {SharedModule} from "../../shared/shared.module";
   ],
   imports: [
     CommonModule,
-    AppMaterialModule
+    SharedModule,
+    AppMaterialModule,
+    ChartPiePendencyByStatusModule
   ]
 })
 export class HomeModule { }

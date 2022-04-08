@@ -1,0 +1,19 @@
+:host {
+  .charts {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+    .chart {
+      margin-right: 10px;
+      margin-bottom: 10px;
+
+
+      min-width: 400px;
+      min-height: 400px;
+    }
+  }
+}
