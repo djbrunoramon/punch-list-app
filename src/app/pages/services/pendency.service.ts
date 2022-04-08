@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {IPendency, Pendency} from "../model/pendency";
 import {IPendencyDto} from "../model/pendency-dto";
+import {IPendencyByStatus} from "../model/pendency-by-status";
 
 @Injectable({
   providedIn: 'root'
@@ -29,5 +30,9 @@ export class PendencyService {
 
   public savePendency(pendency: IPendencyDto): Observable<any> {
     return this.http.post<any>(`${this.URL_API}`, pendency);
+  }
+
+  public getPendencyByStatus(idContract: number): Observable<IPendencyByStatus[]> {
+    return this.http.get<IPendencyByStatus[]>(`${this.URL_API}/contract/${idContract}/chart/pie`);
   }
 }
