@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ChartConfiguration, ChartType} from "chart.js";
+import {ChartConfiguration, ChartData, ChartType} from "chart.js";
 import {BaseChartDirective} from "ng2-charts";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {PendencyService} from "../../services/pendency.service";
@@ -13,8 +13,6 @@ import {PendencyStatus} from "../../model/pendency-status";
 })
 export class ChartBarPendencyByPriorityComponent implements OnInit {
 
-  public pendencyPriorityLabel: string[] = [];
-  public pendencyQuantity: number[] = [];
   public pendencyDataSet: any[] = [];
   public pendencyByPriority: IPendencyByPriority[] = [];
 
@@ -23,23 +21,19 @@ export class ChartBarPendencyByPriorityComponent implements OnInit {
 
   ngOnInit() {
     this.getChart();
-    this.chart?.update();
-
   }
 
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
-  public getChart() {
+  public getChart(): void {
     this.pendencyService.getPendencyByPriority(1, PendencyStatus.OPEN).subscribe(data => {
       this.pendencyByPriority = data;
 
       data.forEach(d => {
-        this.pendencyPriorityLabel.push(d.priority);
-        this.pendencyQuantity.push(d.quantity);
-        this.pendencyDataSet.push({data: d.quantity, label: d.priority});
+        this.pendencyDataSet.push({data: [d.quantity], label: d.priority});
       });
+      this.chart?.update();
     });
-    this.chart?.update();
   }
 
   public barChartOptions: ChartConfiguration['options'] = {
@@ -55,10 +49,10 @@ export class ChartBarPendencyByPriorityComponent implements OnInit {
       legend: {
         display: true,
       },
-      // datalabels: {
-      //   anchor: 'end',
-      //   align: 'end'
-      // }
+      datalabels: {
+        anchor: 'end',
+        align: 'end'
+      }
     }
   };
   public barChartType: ChartType = 'bar';
@@ -66,8 +60,8 @@ export class ChartBarPendencyByPriorityComponent implements OnInit {
     ChartDataLabels
   ];
 
-  public barChartData = {
-    labels: this.pendencyPriorityLabel,
-    datasets: this.pendencyDataSet
+  public barChartData: ChartData<'bar'> = {
+    labels: ['Priority'],
+    datasets: this.pendencyDataSet,
   };
 }
