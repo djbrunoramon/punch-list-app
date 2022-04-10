@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 import {IPendency, Pendency} from "../model/pendency";
 import {IPendencyDto} from "../model/pendency-dto";
 import {IPendencyByStatus} from "../model/pendency-by-status";
+import {IPendencyByPriority} from "../model/pendency-by-priority";
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +35,9 @@ export class PendencyService {
 
   public getPendencyByStatus(idContract: number): Observable<IPendencyByStatus[]> {
     return this.http.get<IPendencyByStatus[]>(`${this.URL_API}/contract/${idContract}/chart/pie`);
+  }
+
+  public getPendencyByPriority(idContract: number, status: string): Observable<IPendencyByPriority[]> {
+    return this.http.get<IPendencyByPriority[]>(`${this.URL_API}/contract/${idContract}/chart/bar/${status}`);
   }
 }

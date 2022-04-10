@@ -20,17 +20,20 @@ export class ChartPiePendencyByStatusComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getChart();
+  }
+
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+
+  public getChart() {
     this.pendencyService.getPendencyByStatus(1).subscribe(data => {
       data.map(f => {
         this.pendencyLabel.push(f.label);
         this.pendencyQuantity.push(f.quantity);
-
-      })
+      });
       this.chart?.update();
     });
   }
-
-  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   // Pie
   public pieChartOptions: ChartConfiguration['options'] = {
