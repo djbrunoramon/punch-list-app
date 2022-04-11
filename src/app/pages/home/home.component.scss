@@ -2,28 +2,23 @@
   .charts {
     margin-left: auto;
     margin-right: auto;
-    display: flex;
-    flex-grow: 1;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    display: flex !important;
+    flex-grow: 1  !important;
+    justify-content: stretch  !important;
+    flex-wrap: wrap  !important;
+
 
     .chart {
-      margin-right: 10px;
+      margin-right: 15px;
       margin-bottom: 10px;
-
-      min-width: 100%;
-      min-height: 100%;
+      height: 100%;
     }
   }
 
   @media (min-width: 768px) {
     .charts {
       .chart {
-        margin-right: 10px;
-        margin-bottom: 10px;
-
-        min-width: 400px;
-        min-height: 400px;
+        min-width: 520px;
       }
     }
   }
