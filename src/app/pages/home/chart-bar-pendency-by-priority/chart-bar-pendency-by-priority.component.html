@@ -1,5 +1,9 @@
 <div class="chart-bar">
+  <h3>Bar Graph - Amount opened by priority</h3>
+  <mat-divider></mat-divider>
+  <div *ngIf="pendencyDataSet.length === 0" class="no-data">No data</div>
   <canvas baseChart
+          *ngIf="pendencyDataSet.length > 0"
           [data]="barChartData"
           [type]="barChartType">
           [options]="barChartOptions"

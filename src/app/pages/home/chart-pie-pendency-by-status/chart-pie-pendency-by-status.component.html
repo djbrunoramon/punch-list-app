@@ -1,5 +1,9 @@
 <div class="chart-pie">
+  <h3>Pie Chart - Quantity By States</h3>
+  <mat-divider></mat-divider>
+  <div *ngIf="pendencyQuantity.length === 0" class="no-data">No data</div>
   <canvas baseChart
+          *ngIf="pendencyQuantity.length > 0"
           [data]="pieChartData"
           [type]="pieChartType"
           [options]="pieChartOptions"
