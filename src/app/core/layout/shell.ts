@@ -5,6 +5,7 @@ import { TuiButton, TuiInput, TuiLoader } from '@taiga-ui/core';
 import { TuiSelect } from '@taiga-ui/kit';
 import { Contract } from '../../features/contracts/data-access/contracts.models';
 import { ContractContext } from '../contract-context/contract-context';
+import { ThemeToggle } from '../theme/theme-toggle';
 
 interface NavLink {
   path: string;
@@ -15,6 +16,7 @@ interface NavLink {
 @Component({
   selector: 'app-shell',
   imports: [
+    ThemeToggle,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,

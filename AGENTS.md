@@ -79,6 +79,9 @@ Convenções (várias são impostas pelo `eslint.config.js`, que roda como `erro
 
 ## Pegadinhas conhecidas
 
+- Tema claro/escuro: `core/theme/theme-toggle.ts` usa o sinal `TUI_DARK_MODE` do Taiga (segue o sistema até o usuário escolher; persiste em `localStorage` `tuiDark`); `provideTaiga()` aplica `tuiTheme="dark"` no `body`. Use sempre tokens `var(--tui-*)` em estilos — cor fixa quebra um dos temas.
+- `TuiPieChart` 5.31: fatia de valor 0 depois de um círculo completo é desenhada como círculo quase inteiro. O dashboard passa só valores > 0 (`pieValues`) e a legenda calcula a cor pelo índice da fatia desenhada. Mantenha isso em qualquer gráfico de pizza novo.
+
 - `docs/` é o **build antigo publicado** (Angular 13, GitHub Pages) mais as imagens do README em `docs/img/`. Não edite o build à mão. O build novo vai para `dist/`.
 - `less` é devDependency necessária: o tema e as fontes do Taiga (`taiga-ui-theme.less`, `taiga-ui-fonts.less`) são compilados pelo build.
 - A fonte (Manrope) vem do Google Fonts (`@import` em `taiga-ui-fonts.less`); sem internet usa a fonte de fallback.

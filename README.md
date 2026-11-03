@@ -7,6 +7,7 @@
 - Responsible person registration and editing (paginated list per contract)
 - Pendency registration and editing, with status rules: `OPEN`, `CLOSED`, `DISAPPROVED` and `CANCELED`; the "by" and "at" fields of the chosen closing status are required
 - Contract selector in the header: the dashboard, responsible persons and pendencies show the selected contract, and the choice is kept across reloads
+- Light and dark themes: follows the operating system until the user picks one in the header (sun/moon button); the choice is kept in `localStorage` (`tuiDark`)
 
 ## Screenshots
 

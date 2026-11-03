@@ -59,3 +59,12 @@ body {
   overflow: hidden;
   clip-path: inset(50%);
 }
+
+// Native controls (date pickers, scrollbars) follow the Taiga theme set on the body.
+body {
+  color-scheme: light;
+}
+
+body[tuiTheme='dark'] {
+  color-scheme: dark;
+}
