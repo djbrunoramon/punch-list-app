@@ -1,0 +1,47 @@
+<header class="page-header">
+  <h1 class="tui-text_h4">{{ isEdit() ? 'Edit responsible person' : 'New responsible person' }}</h1>
+</header>
+
+@if (contractId() === null && !isEdit() && !contractsLoading()) {
+  <tui-block-status data-testid="no-contract">
+    <h4>Select a contract before registering a responsible person</h4>
+    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">Add a contract</a>
+  </tui-block-status>
+} @else {
+  <app-page-state
+    [loading]="person.isLoading() || contractsLoading()"
+    [error]="person.error()"
+    (retry)="person.reload()"
+  >
+    <form class="app-form" tuiForm="m" [formRoot]="form">
+      @if (submitError(); as message) {
+        <div tuiNotification appearance="negative" role="alert" data-testid="submit-error">
+          {{ message }}
+        </div>
+      }
+
+      <tui-textfield>
+        <label tuiLabel for="name">Name</label>
+        <input id="name" tuiInput [formField]="form.name" />
+      </tui-textfield>
+      <tui-error [formField]="form.name" />
+
+      <tui-textfield>
+        <label tuiLabel for="occupation">Occupation</label>
+        <input id="occupation" tuiInput [formField]="form.occupation" />
+      </tui-textfield>
+      <tui-error [formField]="form.occupation" />
+
+      <tui-textfield>
+        <label tuiLabel for="department">Department</label>
+        <input id="department" tuiInput [formField]="form.department" />
+      </tui-textfield>
+      <tui-error [formField]="form.department" />
+
+      <footer class="form-actions">
+        <button tuiButton type="submit" [disabled]="form().submitting()">Save</button>
+        <a tuiButton appearance="secondary" routerLink="/responsible-persons">Cancel</a>
+      </footer>
+    </form>
+  </app-page-state>
+}

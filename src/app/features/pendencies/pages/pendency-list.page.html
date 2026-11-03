@@ -1,0 +1,62 @@
+<header class="page-header">
+  <h1 class="tui-text_h4">Pendencies</h1>
+  <a tuiButton size="m" routerLink="new">New pendency</a>
+</header>
+
+@if (contractId() === null && !contractsLoading()) {
+  <tui-block-status data-testid="no-contract">
+    <h4>Select a contract to see its pendencies</h4>
+    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">Add a contract</a>
+  </tui-block-status>
+} @else {
+  <app-page-state
+    [loading]="contractsLoading() || pendencies.isLoading()"
+    [error]="pendencies.error()"
+    [empty]="rows().length === 0"
+    emptyText="No pendencies registered for this contract yet"
+    (retry)="pendencies.reload()"
+  >
+    <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new"
+      >Register the first pendency</a
+    >
+
+    <div class="table-wrapper">
+      <table class="app-table" data-testid="pendencies-table">
+        <thead>
+          <tr>
+            <th scope="col">Tag</th>
+            <th scope="col">Area</th>
+            <th scope="col">Description</th>
+            <th scope="col">Registered by</th>
+            <th scope="col">Created at</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pendency of rows(); track pendency.id) {
+            <tr>
+              <td>{{ pendency.tag }}</td>
+              <td>{{ pendency.areaIdentification }}</td>
+              <td>{{ pendency.description }}</td>
+              <td>{{ pendency.registeredBy.name }}</td>
+              <td>{{ pendency.createdAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+              <td>
+                <span tuiBadge [appearance]="statusAppearance[pendency.status]">
+                  {{ pendency.status }}
+                </span>
+              </td>
+              <td>
+                <a tuiButton size="xs" appearance="flat" [routerLink]="[pendency.id]">Edit</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <tui-pagination class="pagination" [length]="totalPages()" [(index)]="page" />
+    }
+  </app-page-state>
+}

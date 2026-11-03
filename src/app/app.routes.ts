@@ -1,15 +1,18 @@
 import { Routes } from '@angular/router';
 import { Shell } from './core/layout/shell';
 
-const underConstruction = () =>
-  import('./shared/ui/under-construction.page').then((m) => m.UnderConstructionPage);
-
 export const routes: Routes = [
   {
     path: '',
     component: Shell,
     children: [
-      { path: '', pathMatch: 'full', title: 'Dashboard', loadComponent: underConstruction },
+      {
+        path: '',
+        pathMatch: 'full',
+        title: 'Dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard.page').then((m) => m.DashboardPage),
+      },
       {
         path: 'contracts',
         loadChildren: () =>
@@ -17,10 +20,16 @@ export const routes: Routes = [
       },
       {
         path: 'responsible-persons',
-        title: 'Responsible persons',
-        loadComponent: underConstruction,
+        loadChildren: () =>
+          import('./features/responsible-persons/responsible-persons.routes').then(
+            (m) => m.RESPONSIBLE_PERSONS_ROUTES,
+          ),
       },
-      { path: 'pendencies', title: 'Pendencies', loadComponent: underConstruction },
+      {
+        path: 'pendencies',
+        loadChildren: () =>
+          import('./features/pendencies/pendencies.routes').then((m) => m.PENDENCIES_ROUTES),
+      },
 
       // Old (Angular 13) URLs
       { path: 'contract', redirectTo: 'contracts', pathMatch: 'full' },

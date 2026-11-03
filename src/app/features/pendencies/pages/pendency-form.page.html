@@ -1,0 +1,151 @@
+<header class="page-header">
+  <h1 class="tui-text_h4">{{ isEdit() ? 'Edit pendency' : 'New pendency' }}</h1>
+</header>
+
+@if (contractId() === null && !isEdit() && !contractsLoading()) {
+  <tui-block-status data-testid="no-contract">
+    <h4>Select a contract before registering a pendency</h4>
+    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">Add a contract</a>
+  </tui-block-status>
+} @else {
+  <app-page-state [loading]="loading()" [error]="loadError()" (retry)="reload()">
+    <form class="app-form" tuiForm="m" [formRoot]="form">
+      @if (submitError(); as message) {
+        <div tuiNotification appearance="negative" role="alert" data-testid="submit-error">
+          {{ message }}
+        </div>
+      }
+
+      <tui-textfield>
+        <label tuiLabel for="areaIdentification">Area</label>
+        <input id="areaIdentification" tuiInput [formField]="form.areaIdentification" />
+      </tui-textfield>
+      <tui-error [formField]="form.areaIdentification" />
+
+      <tui-textfield>
+        <label tuiLabel for="tag">Tag</label>
+        <input id="tag" tuiInput [formField]="form.tag" />
+      </tui-textfield>
+      <tui-error [formField]="form.tag" />
+
+      <tui-textfield>
+        <label tuiLabel for="description">Description</label>
+        <textarea id="description" tuiTextarea [formField]="form.description"></textarea>
+      </tui-textfield>
+      <tui-error [formField]="form.description" />
+
+      <tui-textfield>
+        <label tuiLabel for="priority">Priority</label>
+        <input id="priority" tuiInput [formField]="form.priority" />
+      </tui-textfield>
+      <tui-error [formField]="form.priority" />
+
+      <tui-textfield>
+        <label tuiLabel for="discipline">Discipline</label>
+        <input id="discipline" tuiInput [formField]="form.discipline" />
+      </tui-textfield>
+      <tui-error [formField]="form.discipline" />
+
+      <tui-textfield>
+        <label tuiLabel for="status">Status</label>
+        <select id="status" tuiSelect [formField]="form.status" [items]="statuses"></select>
+      </tui-textfield>
+      <tui-error [formField]="form.status" />
+
+      <tui-textfield [stringify]="stringifyPerson" [identityMatcher]="samePerson">
+        <label tuiLabel for="registeredBy">Registered by</label>
+        <select
+          id="registeredBy"
+          tuiSelect
+          [formField]="form.registeredBy"
+          [items]="people()"
+        ></select>
+      </tui-textfield>
+      <tui-error [formField]="form.registeredBy" />
+
+      <tui-textfield [stringify]="stringifyPerson" [identityMatcher]="samePerson">
+        <label tuiLabel for="registeredTo">Registered to</label>
+        <select
+          id="registeredTo"
+          tuiSelect
+          [formField]="form.registeredTo"
+          [items]="people()"
+        ></select>
+      </tui-textfield>
+      <tui-error [formField]="form.registeredTo" />
+
+      <tui-textfield>
+        <label tuiLabel for="expectedIn">Expected in</label>
+        <input id="expectedIn" tuiInput type="datetime-local" [formField]="form.expectedIn" />
+      </tui-textfield>
+      <tui-error [formField]="form.expectedIn" />
+
+      @switch (status()) {
+        @case ('CLOSED') {
+          <tui-textfield [stringify]="stringifyPerson" [identityMatcher]="samePerson">
+            <label tuiLabel for="finishedBy">Finished by</label>
+            <select
+              id="finishedBy"
+              tuiSelect
+              [formField]="form.finishedBy"
+              [items]="people()"
+            ></select>
+          </tui-textfield>
+          <tui-error [formField]="form.finishedBy" />
+
+          <tui-textfield>
+            <label tuiLabel for="finishedAt">Finished at</label>
+            <input id="finishedAt" tuiInput type="datetime-local" [formField]="form.finishedAt" />
+          </tui-textfield>
+          <tui-error [formField]="form.finishedAt" />
+        }
+        @case ('DISAPPROVED') {
+          <tui-textfield [stringify]="stringifyPerson" [identityMatcher]="samePerson">
+            <label tuiLabel for="disapprovedBy">Disapproved by</label>
+            <select
+              id="disapprovedBy"
+              tuiSelect
+              [formField]="form.disapprovedBy"
+              [items]="people()"
+            ></select>
+          </tui-textfield>
+          <tui-error [formField]="form.disapprovedBy" />
+
+          <tui-textfield>
+            <label tuiLabel for="disapprovedAt">Disapproved at</label>
+            <input
+              id="disapprovedAt"
+              tuiInput
+              type="datetime-local"
+              [formField]="form.disapprovedAt"
+            />
+          </tui-textfield>
+          <tui-error [formField]="form.disapprovedAt" />
+        }
+        @case ('CANCELED') {
+          <tui-textfield [stringify]="stringifyPerson" [identityMatcher]="samePerson">
+            <label tuiLabel for="canceledBy">Canceled by</label>
+            <select
+              id="canceledBy"
+              tuiSelect
+              [formField]="form.canceledBy"
+              [items]="people()"
+            ></select>
+          </tui-textfield>
+          <tui-error [formField]="form.canceledBy" />
+
+          <tui-textfield>
+            <label tuiLabel for="canceledAt">Canceled at</label>
+            <input id="canceledAt" tuiInput type="datetime-local" [formField]="form.canceledAt" />
+          </tui-textfield>
+          <tui-error [formField]="form.canceledAt" />
+        }
+      }
+
+      <footer class="form-actions">
+        <button tuiButton type="submit" [disabled]="form().submitting()">Save</button>
+        <a tuiButton appearance="secondary" routerLink="/pendencies">Cancel</a>
+      </footer>
+    </form>
+  </app-page-state>
+}
