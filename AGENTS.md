@@ -8,6 +8,7 @@ Front-end Angular para registro de pendências (punch list) de contratos EPC: da
 
 - Angular 22 (standalone, zoneless, signals, Signal Forms), TypeScript 6 em modo `strict` + `strictTemplates`
 - Taiga UI 5.31 (core, kit, layout, addon-charts, icons); estilos SCSS, tema/fontes Taiga via `.less` em `angular.json`
+- i18n: Transloco 8.4 (`@jsverse/transloco`), idiomas `en` (base/fallback) e `pt-BR`, troca em runtime — padrão em [`docs/i18n.md`](docs/i18n.md)
 - Testes: Vitest (+ jsdom) pelo builder `@angular/build:unit-test`
 - Lint: ESLint 10 + angular-eslint + typescript-eslint; formatação: Prettier (`printWidth` 100, aspas simples)
 - Node `^22.22.3 || ^24.15` (exigência do toolchain Angular 22)
@@ -34,17 +35,19 @@ src/app/
     api-error/          # ApiError, toApiError, apiErrorInterceptor
     config/             # API_BASE_URL (InjectionToken -> environment.apiBaseUrl)
     contract-context/   # ContractContext: contrato selecionado (linkedSignal + localStorage)
+    i18n/               # Language (idioma atual), seletor, loader, Accept-Language, idioma do Taiga, títulos traduzidos
     layout/             # Shell: cabeçalho, navegação, seletor de contrato
   shared/
     models/page.ts      # Page<T>, PageRequest, toPageParams (size máx. 100)
     ui/page-state.ts    # <app-page-state>: loading / erro / vazio
-    util/               # date-time.ts, server-errors.ts
+    util/               # date-time.ts, server-errors.ts, required-text.ts, validation-messages.ts
   features/<feature>/   # dashboard, contracts, responsible-persons, pendencies
     data-access/        # <x>.api.ts (HTTP) e <x>.models.ts (interfaces Response/Request)
     pages/              # <x>-list.page / <x>-form.page (.ts + .html)
     <feature>.routes.ts # '', 'new', ':id'
 src/environments/       # apiBaseUrl (vazio por padrão: chamadas relativas)
-src/testing/            # fixtures (aContract, aPage, ...) só para testes
+src/testing/            # fixtures (aContract, aPage, ...) e provideI18nTesting() só para testes
+public/i18n/            # en.json e pt-BR.json (traduções)
 ```
 
 Rotas: `/` (dashboard), `/contracts`, `/responsible-persons`, `/pendencies`, cada uma com `new` e `:id`. As URLs antigas (`/contract`, `/responsible-person`, `/pendency`, com ou sem `:id`) redirecionam para as novas.
@@ -65,10 +68,20 @@ Convenções (várias são impostas pelo `eslint.config.js`, que roda como `erro
 - Segurança: não use `bypassSecurityTrust*`, `innerHTML` nem `outerHTML` (regra do lint); use interpolação.
 - Dados: `rxResource` para carregar; `linkedSignal` quando o estado depende de outro (ex.: página volta a 0 ao trocar de contrato); sem `subscribe` manual em componentes.
 - Formulários: Signal Forms (`form`, `required`, `maxLength`, `applyWhen`, `FormField`); limites dos campos em `*_LIMITS` nos models, iguais aos do backend.
-- Cada página de dados usa `<app-page-state>` (loading, erro com "Try again", vazio) e o seletor global de contrato (`ContractContext`).
+- Cada página de dados usa `<app-page-state>` (loading, erro com retry, vazio — texto passado já traduzido em `[emptyText]`) e o seletor global de contrato (`ContractContext`).
 - Services `providedIn: 'root'`, URL = `inject(API_BASE_URL)` + `/api/v1/<recurso>`. Nunca hardcode host.
 - Models como interfaces espelhando `*Response`/`*Request` do backend (sem prefixo `I`).
 - Estilo `scss`, aspas simples, 2 espaços (`.editorconfig`, `.prettierrc`). Código, nomes e mensagens de commit em inglês.
+
+## i18n (obrigatório em todo texto visível)
+
+- Nenhum texto visível fica fixo em `.html`/`.ts` — inclusive `aria-label`, `title`, estados vazios/erro e rótulos de enum. Use o pipe `transloco` (`{{ 'contracts.title' | transloco }}`); em TS, `translateSignal`/`translateObjectSignal` para o que precisa seguir a troca de idioma e `TranslocoService.translate` para texto pontual.
+- **Padrão de chaves** (detalhes em `docs/i18n.md`): `<escopo>.<área>.<elemento>[.<variante>]`, segmentos lowerCamelCase em inglês; escopos `app`, `common`, `shell`, `contracts`, `responsiblePersons`, `pendencies`, `dashboard`, `validation`, `error`, `enum`. Campo = nome do campo na API (`<feature>.field.<apiField>`, mesma chave na lista e no form); enum = `enum.<enumName>.<VALOR_DA_API>` (única chave dinâmica permitida). A chave descreve o propósito, nunca o texto.
+- Chave nova: primeiro em `public/i18n/en.json`, depois em `pt-BR.json`, em ordem alfabética. `npm test` quebra (`core/i18n/translations.spec.ts`) se faltar chave num idioma, se houver valor vazio, parâmetros diferentes, nome fora do padrão ou ordem errada.
+- Mensagens de validação: `private readonly message = injectValidationMessages();` → `{ message: this.message('validation.required') }` (reativas ao idioma).
+- Datas/moeda: `| date: 'short' : undefined : locale()` e `| currency: 'BRL' : 'symbol' : undefined : locale()`, com `locale = inject(Language).locale`.
+- O idioma vai para a API em `Accept-Language` (interceptor); `detail` e `errors[].message` da API já vêm traduzidos e são exibidos como chegam. Fallback de rede/5xx usa `error.*`.
+- Specs que renderizam template precisam de `provideI18nTesting()` (carrega o `en.json` real; asserções continuam em inglês).
 
 ## Como testar
 
@@ -92,6 +105,7 @@ Convenções (várias são impostas pelo `eslint.config.js`, que roda como `erro
 - O proxy (`proxy.conf.json`) só vale no `ng serve`. Em produção, `apiBaseUrl` vazio exige mesma origem; com outra origem, ela precisa estar em `APP_CORS_ALLOWED_ORIGINS` na API.
 - Não coloque segredos em `environment*.ts`: tudo ali vai para o bundle público.
 - Seleção de contrato fica em `localStorage` (`punch-list.selected-contract`); o código tolera storage indisponível.
+- Idioma em `localStorage` `lang` (`en`/`pt-BR`); primeira visita usa `navigator.language`. O `select` nativo do Taiga mostra o `stringify` — o de status é um `computed` sobre `translateObjectSignal('enum.pendencyStatus')` para seguir a troca de idioma; em testes, escolha a opção pelo rótulo traduzido.
 
 ## Contrato com o backend
 

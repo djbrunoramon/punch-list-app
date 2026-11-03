@@ -7,6 +7,7 @@
 - Responsible person registration and editing (paginated list per contract)
 - Pendency registration and editing, with status rules: `OPEN`, `CLOSED`, `DISAPPROVED` and `CANCELED`; the "by" and "at" fields of the chosen closing status are required
 - Contract selector in the header: the dashboard, responsible persons and pendencies show the selected contract, and the choice is kept across reloads
+- English and Brazilian Portuguese (EN / PT-BR switch in the header; first visit follows the browser language). Taiga texts, dates, currency and the API error messages follow the chosen language. See [docs/i18n.md](docs/i18n.md) for the key naming standard
 - Light and dark themes: follows the operating system until the user picks one in the header (sun/moon button); the choice is kept in `localStorage` (`tuiDark`)
 
 ## Screenshots
@@ -25,6 +26,7 @@
 
 - [Angular](https://angular.dev) 22: standalone components, zoneless change detection, signals and Signal Forms
 - [Taiga UI](https://taiga-ui.dev) 5.31 (core, kit, layout, charts, icons)
+- [Transloco](https://jsverse.gitbook.io/transloco) 8.4 for i18n (English and Brazilian Portuguese, runtime switch)
 - TypeScript 6, RxJS 7.8
 - [Vitest](https://vitest.dev) (with jsdom) through `ng test`
 - ESLint with angular-eslint and typescript-eslint, Prettier
