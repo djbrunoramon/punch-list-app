@@ -1,0 +1,53 @@
+<header class="page-header">
+  <h1 class="tui-text_h4">Contracts</h1>
+  <a tuiButton size="m" routerLink="new">New contract</a>
+</header>
+
+<app-page-state
+  [loading]="contracts.isLoading()"
+  [error]="contracts.error()"
+  [empty]="rows().length === 0"
+  emptyText="No contracts registered yet"
+  (retry)="contracts.reload()"
+>
+  <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new"
+    >Register the first contract</a
+  >
+
+  <div class="table-wrapper">
+    <table class="app-table" data-testid="contracts-table">
+      <thead>
+        <tr>
+          <th scope="col">Number</th>
+          <th scope="col">Description</th>
+          <th scope="col">Address</th>
+          <th scope="col">Start</th>
+          <th scope="col">Scheduled to</th>
+          <th scope="col">Estimated</th>
+          <th scope="col">Status</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (contract of rows(); track contract.id) {
+          <tr>
+            <td>{{ contract.numberContract }}</td>
+            <td>{{ contract.description }}</td>
+            <td>{{ contract.address }}</td>
+            <td>{{ contract.startAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+            <td>{{ contract.scheduledTo | date: 'yyyy-MM-dd HH:mm' }}</td>
+            <td>{{ contract.estimatedAt | currency: 'BRL' }}</td>
+            <td>
+              <span tuiBadge [appearance]="contract.active ? 'positive' : 'neutral'">
+                {{ contract.active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>
+              <a tuiButton size="xs" appearance="flat" [routerLink]="[contract.id]">Edit</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</app-page-state>
