@@ -1,0 +1,91 @@
+<header class="page-header">
+  <h1 class="tui-text_h4">{{ 'dashboard.title' | transloco }}</h1>
+</header>
+
+@if (contractsError()) {
+  <app-page-state [error]="contractsError()" (retry)="reloadContracts()" />
+} @else if (contractId() === null && !contractsLoading()) {
+  <tui-block-status data-testid="no-contract">
+    <h4>{{ 'dashboard.message.selectContract' | transloco }}</h4>
+    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">{{
+      'common.action.addContract' | transloco
+    }}</a>
+  </tui-block-status>
+} @else {
+  <app-page-state
+    [loading]="contractsLoading() || byStatus.isLoading()"
+    [error]="byStatus.error()"
+    [empty]="total() === 0"
+    [emptyText]="'dashboard.message.noPendencies' | transloco"
+    (retry)="byStatus.reload()"
+  >
+    <div class="charts">
+      <section class="chart" aria-labelledby="status-title" data-testid="status-chart">
+        <h2 id="status-title" class="tui-text_h5">{{ 'dashboard.status.title' | transloco }}</h2>
+        <tui-pie-chart size="l" [value]="pieValues()" />
+        <ul class="legend" data-testid="status-legend">
+          @for (item of legend(); track item.label) {
+            <li>
+              <tui-legend-item
+                [attr.data-color]="item.color"
+                [color]="item.color"
+                [text]="
+                  'dashboard.status.legendItem'
+                    | transloco
+                      : {
+                          status: 'enum.pendencyStatus.' + item.label | transloco,
+                          count: item.quantity,
+                        }
+                "
+              />
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="chart" aria-labelledby="priority-title">
+        <h2 id="priority-title" class="tui-text_h5">
+          {{ 'dashboard.priority.title' | transloco }}
+        </h2>
+        <tui-textfield class="filter" tuiTextfieldSize="s" [stringify]="stringifyStatus()">
+          <label tuiLabel for="status-filter">{{
+            'dashboard.priority.statusFilter' | transloco
+          }}</label>
+          <select id="status-filter" tuiSelect [formField]="filter" [items]="statuses"></select>
+        </tui-textfield>
+
+        <app-page-state
+          [loading]="byPriority.isLoading()"
+          [error]="byPriority.error()"
+          [empty]="priorityCounts().length === 0"
+          [emptyText]="'dashboard.priority.empty' | transloco"
+          (retry)="byPriority.reload()"
+        >
+          <div
+            class="bars"
+            role="img"
+            data-testid="priority-chart"
+            [attr.aria-label]="
+              'dashboard.priority.description'
+                | transloco
+                  : {
+                      status: 'enum.pendencyStatus.' + status() | transloco,
+                      values: priorityValuesText(),
+                    }
+            "
+          >
+            <tui-axes
+              class="axes"
+              [axisXLabels]="priorityLabels()"
+              [axisYLabels]="priorityAxis()"
+              [horizontalLines]="2"
+              [centeredXLabels]="true"
+            >
+              <tui-bar-chart [size]="null" [max]="priorityMax()" [value]="priorityValues()" />
+            </tui-axes>
+          </div>
+        </app-page-state>
+      </section>
+    </div>
+  </app-page-state>
+}

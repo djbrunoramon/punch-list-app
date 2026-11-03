@@ -1,0 +1,30 @@
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 2rem;
+}
+
+.chart h2 {
+  margin-block: 0 1rem;
+}
+
+.legend {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter {
+  max-inline-size: 14rem;
+  margin-block-end: 1rem;
+}
+
+.bars {
+  padding-inline-start: 2rem;
+}
+
+.axes {
+  block-size: 14rem;
+}

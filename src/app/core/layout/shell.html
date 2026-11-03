@@ -1,0 +1,55 @@
+<header class="header">
+  <a class="brand" routerLink="/">{{ 'app.name' | transloco }}</a>
+
+  <nav class="nav" [attr.aria-label]="'shell.nav.label' | transloco">
+    @for (link of links; track link.path) {
+      <a
+        tuiButton
+        size="s"
+        appearance="flat"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        [routerLinkActiveOptions]="{ exact: link.exact }"
+        [routerLink]="link.path"
+        >{{ link.labelKey | transloco }}</a
+      >
+    }
+  </nav>
+
+  <div class="contract-selector">
+    @if (context.contracts.isLoading()) {
+      <tui-loader size="s" />
+    } @else if (context.contracts.error()) {
+      <span class="selector-error" role="status">{{
+        'shell.contractSelector.unavailable' | transloco
+      }}</span>
+      <button tuiButton type="button" size="s" appearance="secondary" (click)="context.reload()">
+        {{ 'common.action.retry' | transloco }}
+      </button>
+    } @else if (context.contracts.hasValue() && context.contracts.value().length) {
+      <tui-textfield tuiTextfieldSize="s" [stringify]="stringify" [identityMatcher]="sameContract">
+        <label tuiLabel for="contract-selector">{{
+          'shell.contractSelector.label' | transloco
+        }}</label>
+        <select
+          id="contract-selector"
+          tuiSelect
+          data-testid="contract-selector"
+          [formField]="selection"
+          [items]="context.contracts.value()"
+        ></select>
+      </tui-textfield>
+    } @else {
+      <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">{{
+        'common.action.addContract' | transloco
+      }}</a>
+    }
+  </div>
+
+  <app-language-switcher />
+  <app-theme-toggle />
+</header>
+
+<main class="main">
+  <router-outlet />
+</main>

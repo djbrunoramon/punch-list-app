@@ -1,0 +1,178 @@
+{
+  "app": {
+    "name": "Punch List"
+  },
+  "common": {
+    "action": {
+      "addContract": "Cadastrar contrato",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "retry": "Tentar novamente",
+      "save": "Salvar"
+    },
+    "label": {
+      "actions": "Ações",
+      "pagination": "Páginas",
+      "status": "Situação"
+    },
+    "state": {
+      "empty": "Nada por aqui ainda",
+      "loading": "Carregando"
+    }
+  },
+  "contracts": {
+    "field": {
+      "address": "Endereço",
+      "description": "Descrição",
+      "estimatedAt": "Valor estimado",
+      "numberContract": "Número do contrato",
+      "scheduledTo": "Previsto para",
+      "startAt": "Início"
+    },
+    "form": {
+      "estimatedAtBrl": "Valor estimado (R$)",
+      "title": {
+        "create": "Novo contrato",
+        "edit": "Editar contrato"
+      }
+    },
+    "list": {
+      "active": "Ativo",
+      "empty": "Nenhum contrato cadastrado ainda",
+      "emptyAction": "Cadastrar o primeiro contrato",
+      "inactive": "Inativo",
+      "new": "Novo contrato"
+    },
+    "title": "Contratos"
+  },
+  "dashboard": {
+    "message": {
+      "noPendencies": "Nenhuma pendência ainda",
+      "selectContract": "Selecione um contrato para ver o painel"
+    },
+    "priority": {
+      "description": "Pendências {{ status }} por prioridade: {{ values }}",
+      "empty": "Nenhuma pendência nesta situação",
+      "statusFilter": "Situação",
+      "title": "Por prioridade"
+    },
+    "status": {
+      "legendItem": "{{ status }} ({{ count }})",
+      "title": "Por situação"
+    },
+    "title": "Painel"
+  },
+  "enum": {
+    "pendencyStatus": {
+      "CANCELED": "Cancelada",
+      "CLOSED": "Concluída",
+      "DISAPPROVED": "Reprovada",
+      "OPEN": "Aberta"
+    }
+  },
+  "error": {
+    "network": "Não foi possível acessar o servidor. Verifique sua conexão e tente novamente.",
+    "notFound": "O registro solicitado não foi encontrado.",
+    "serverUnavailable": "O servidor está indisponível. Tente novamente em instantes.",
+    "title": {
+      "requestFailed": "Falha na requisição",
+      "unexpected": "Erro inesperado"
+    },
+    "unexpected": "Algo deu errado. Tente novamente."
+  },
+  "pendencies": {
+    "field": {
+      "areaIdentification": "Área",
+      "canceledAt": "Cancelada em",
+      "canceledBy": "Cancelada por",
+      "createdAt": "Criada em",
+      "description": "Descrição",
+      "disapprovedAt": "Reprovada em",
+      "disapprovedBy": "Reprovada por",
+      "discipline": "Disciplina",
+      "expectedIn": "Prevista para",
+      "finishedAt": "Concluída em",
+      "finishedBy": "Concluída por",
+      "priority": "Prioridade",
+      "registeredBy": "Registrada por",
+      "registeredTo": "Atribuída a",
+      "status": "Situação",
+      "tag": "Tag"
+    },
+    "form": {
+      "title": {
+        "create": "Nova pendência",
+        "edit": "Editar pendência"
+      }
+    },
+    "list": {
+      "empty": "Nenhuma pendência cadastrada para este contrato ainda",
+      "emptyAction": "Cadastrar a primeira pendência",
+      "new": "Nova pendência"
+    },
+    "message": {
+      "selectContractToCreate": "Selecione um contrato antes de cadastrar uma pendência",
+      "selectContractToList": "Selecione um contrato para ver as pendências"
+    },
+    "title": "Pendências"
+  },
+  "responsiblePersons": {
+    "field": {
+      "createdAt": "Cadastrado em",
+      "department": "Departamento",
+      "name": "Nome",
+      "occupation": "Cargo"
+    },
+    "form": {
+      "title": {
+        "create": "Novo responsável",
+        "edit": "Editar responsável"
+      }
+    },
+    "list": {
+      "active": "Ativo",
+      "empty": "Nenhum responsável cadastrado para este contrato ainda",
+      "emptyAction": "Cadastrar o primeiro responsável",
+      "inactive": "Inativo",
+      "new": "Novo responsável"
+    },
+    "message": {
+      "selectContractToCreate": "Selecione um contrato antes de cadastrar um responsável",
+      "selectContractToList": "Selecione um contrato para ver os responsáveis"
+    },
+    "title": "Responsáveis"
+  },
+  "shell": {
+    "contractSelector": {
+      "label": "Contrato",
+      "unavailable": "Contratos indisponíveis"
+    },
+    "language": {
+      "label": "Idioma",
+      "name": {
+        "en": "Inglês",
+        "ptBr": "Português (Brasil)"
+      },
+      "short": {
+        "en": "EN",
+        "ptBr": "PT-BR"
+      }
+    },
+    "nav": {
+      "contracts": "Contratos",
+      "dashboard": "Painel",
+      "label": "Principal",
+      "pendencies": "Pendências",
+      "responsiblePersons": "Responsáveis"
+    },
+    "theme": {
+      "toDark": "Mudar para o tema escuro",
+      "toLight": "Mudar para o tema claro"
+    }
+  },
+  "validation": {
+    "maxLength": "Máximo de {{ max }} caracteres",
+    "min": "Deve ser {{ min }} ou mais",
+    "required": "Campo obrigatório"
+  }
+}

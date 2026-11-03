@@ -1,0 +1,66 @@
+<header class="page-header">
+  <h1 class="tui-text_h4">
+    {{ (isEdit() ? 'contracts.form.title.edit' : 'contracts.form.title.create') | transloco }}
+  </h1>
+</header>
+
+<app-page-state
+  [loading]="contract.isLoading()"
+  [error]="contract.error()"
+  (retry)="contract.reload()"
+>
+  <form class="app-form" tuiForm="m" [formRoot]="form">
+    @if (submitError(); as message) {
+      <div tuiNotification appearance="negative" role="alert" data-testid="submit-error">
+        {{ message }}
+      </div>
+    }
+
+    <tui-textfield>
+      <label tuiLabel for="numberContract">{{
+        'contracts.field.numberContract' | transloco
+      }}</label>
+      <input id="numberContract" tuiInput [formField]="form.numberContract" />
+    </tui-textfield>
+    <tui-error [formField]="form.numberContract" />
+
+    <tui-textfield>
+      <label tuiLabel for="description">{{ 'contracts.field.description' | transloco }}</label>
+      <textarea id="description" tuiTextarea [formField]="form.description"></textarea>
+    </tui-textfield>
+    <tui-error [formField]="form.description" />
+
+    <tui-textfield>
+      <label tuiLabel for="address">{{ 'contracts.field.address' | transloco }}</label>
+      <input id="address" tuiInput [formField]="form.address" />
+    </tui-textfield>
+    <tui-error [formField]="form.address" />
+
+    <tui-textfield>
+      <label tuiLabel for="startAt">{{ 'contracts.field.startAt' | transloco }}</label>
+      <input id="startAt" tuiInput type="datetime-local" [formField]="form.startAt" />
+    </tui-textfield>
+    <tui-error [formField]="form.startAt" />
+
+    <tui-textfield>
+      <label tuiLabel for="scheduledTo">{{ 'contracts.field.scheduledTo' | transloco }}</label>
+      <input id="scheduledTo" tuiInput type="datetime-local" [formField]="form.scheduledTo" />
+    </tui-textfield>
+    <tui-error [formField]="form.scheduledTo" />
+
+    <tui-textfield>
+      <label tuiLabel for="estimatedAt">{{ 'contracts.form.estimatedAtBrl' | transloco }}</label>
+      <input id="estimatedAt" tuiInput type="number" step="0.01" [formField]="form.estimatedAt" />
+    </tui-textfield>
+    <tui-error [formField]="form.estimatedAt" />
+
+    <footer class="form-actions">
+      <button tuiButton type="submit" [disabled]="form().submitting()">
+        {{ 'common.action.save' | transloco }}
+      </button>
+      <a tuiButton appearance="secondary" routerLink="/contracts">{{
+        'common.action.cancel' | transloco
+      }}</a>
+    </footer>
+  </form>
+</app-page-state>

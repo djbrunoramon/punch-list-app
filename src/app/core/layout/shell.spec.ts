@@ -1,0 +1,104 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideTaiga } from '@taiga-ui/core';
+import { aContract } from '../../../testing/fixtures';
+import { ContractContext } from '../contract-context/contract-context';
+import { Shell } from './shell';
+import { provideI18nTesting } from '../../../testing/i18n';
+
+describe('Shell', () => {
+  let httpTesting: HttpTestingController;
+
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [Shell],
+      providers: [
+        provideI18nTesting(),
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTaiga(),
+      ],
+    });
+    httpTesting = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => httpTesting.verify());
+
+  async function render(contracts: ReturnType<typeof aContract>[]) {
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    httpTesting.expectOne('/api/v1/contract').flush(contracts);
+    await fixture.whenStable();
+    return fixture;
+  }
+
+  it('lets the user switch the selected contract', async () => {
+    const fixture = await render([
+      aContract({ id: 1, numberContract: 'A-1' }),
+      aContract({ id: 2, numberContract: 'B-2' }),
+    ]);
+    const select = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>(
+      '[data-testid="contract-selector"]',
+    );
+    expect(select).not.toBeNull();
+    expect(select?.options.length).toBe(2);
+
+    select!.selectedIndex = 1;
+    select!.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+
+    expect(TestBed.inject(ContractContext).selectedId()).toBe(2);
+  });
+
+  it('offers to add a contract when there is none', async () => {
+    const fixture = await render([]);
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="contract-selector"]')).toBeNull();
+    expect(el.textContent).toContain('Add a contract');
+  });
+
+  it('offers a retry when the contracts fail to load', async () => {
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    httpTesting
+      .expectOne('/api/v1/contract')
+      .flush({ detail: 'Down' }, { status: 503, statusText: 'Unavailable' });
+    await fixture.whenStable();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Contracts unavailable');
+    const retry = Array.from(el.querySelectorAll('button')).find(
+      (b) => b.textContent?.trim() === 'Try again',
+    );
+    expect(retry).toBeDefined();
+
+    retry!.click();
+    fixture.detectChanges();
+    httpTesting.expectOne('/api/v1/contract').flush([aContract({ id: 1 })]);
+    await fixture.whenStable();
+
+    expect(el.textContent).not.toContain('Contracts unavailable');
+    expect(el.querySelector('[data-testid="contract-selector"]')).not.toBeNull();
+  });
+
+  it('switches the language from the header', async () => {
+    const fixture = await render([aContract({ id: 1, numberContract: 'A-1' })]);
+    const el = fixture.nativeElement as HTMLElement;
+    const nav = () => el.querySelector('nav')?.textContent ?? '';
+    expect(nav()).toContain('Dashboard');
+
+    el.querySelector<HTMLButtonElement>('[data-testid="language-pt-BR"]')!.click();
+    await fixture.whenStable();
+
+    expect(nav()).toContain('Painel');
+    expect(nav()).toContain('Pendências');
+    expect(el.querySelector('[data-testid="language-pt-BR"]')?.getAttribute('aria-pressed')).toBe(
+      'true',
+    );
+    expect(document.documentElement.lang).toBe('pt-BR');
+  });
+});
