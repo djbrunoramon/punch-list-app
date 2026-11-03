@@ -60,10 +60,31 @@ export class DashboardPage {
   protected readonly statusCounts = computed(() =>
     this.byStatus.hasValue() ? this.byStatus.value() : [],
   );
-  protected readonly statusValues = computed(() => this.statusCounts().map((s) => s.quantity));
   protected readonly total = computed(() =>
-    this.statusValues().reduce((sum, quantity) => sum + quantity, 0),
+    this.statusCounts().reduce((sum, { quantity }) => sum + quantity, 0),
   );
+
+  /**
+   * Only non-zero values go to the pie: TuiPieChart 5.31 draws a zero slice that follows a full
+   * circle (e.g. [3, 0, 0, 0]) as an almost complete circle.
+   */
+  protected readonly pieValues = computed(() =>
+    this.statusCounts()
+      .map(({ quantity }) => quantity)
+      .filter((quantity) => quantity > 0),
+  );
+
+  /** Legend: drawn statuses share their slice color (by slice index); empty ones are neutral. */
+  protected readonly legend = computed(() => {
+    let slice = 0;
+    return this.statusCounts().map((item) => ({
+      ...item,
+      color:
+        item.quantity > 0
+          ? `var(--tui-chart-categorical-${String(slice++).padStart(2, '0')})`
+          : 'var(--tui-background-neutral-2)',
+    }));
+  });
 
   protected readonly priorityCounts = computed(() =>
     this.byPriority.hasValue() ? this.byPriority.value() : [],

@@ -20,12 +20,13 @@
     <div class="charts">
       <section class="chart" aria-labelledby="status-title" data-testid="status-chart">
         <h2 id="status-title" class="tui-text_h5">By status</h2>
-        <tui-pie-chart size="l" [value]="statusValues()" />
+        <tui-pie-chart size="l" [value]="pieValues()" />
         <ul class="legend" data-testid="status-legend">
-          @for (item of statusCounts(); track item.label; let i = $index) {
+          @for (item of legend(); track item.label) {
             <li>
               <tui-legend-item
-                [color]="'var(--tui-chart-categorical-0' + i + ')'"
+                [attr.data-color]="item.color"
+                [color]="item.color"
                 [text]="item.label + ' (' + item.quantity + ')'"
               />
             </li>

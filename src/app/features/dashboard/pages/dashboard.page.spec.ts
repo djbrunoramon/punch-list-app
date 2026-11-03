@@ -115,6 +115,36 @@ describe('DashboardPage', () => {
     expect(testid(fixture, 'status-legend')?.querySelectorAll('tui-legend-item').length).toBe(4);
   });
 
+  it('draws only the statuses with pendencies (zero slices after a full circle render as full circles in TuiPieChart 5.31)', async () => {
+    const fixture = await renderLoaded([
+      { label: 'OPEN', quantity: 3 },
+      { label: 'CLOSED', quantity: 0 },
+      { label: 'DISAPPROVED', quantity: 0 },
+      { label: 'CANCELED', quantity: 0 },
+    ]);
+
+    const segments = el(fixture).querySelectorAll(
+      'tui-pie-chart [automation-id="tui-pie-chart__segment"]',
+    );
+    expect(segments.length).toBe(1);
+    // the legend keeps every status, and a drawn status uses the same color as its slice
+    const items = testid(fixture, 'status-legend')?.querySelectorAll('tui-legend-item') ?? [];
+    expect(items.length).toBe(4);
+  });
+
+  it('keeps legend colors aligned with the drawn slices', async () => {
+    const fixture = await renderLoaded(); // OPEN 5, CLOSED 2, DISAPPROVED 0, CANCELED 1
+    const colors = Array.from(
+      testid(fixture, 'status-legend')?.querySelectorAll<HTMLElement>('[data-color]') ?? [],
+    ).map((item) => item.dataset['color']);
+    expect(colors).toEqual([
+      'var(--tui-chart-categorical-00)',
+      'var(--tui-chart-categorical-01)',
+      'var(--tui-background-neutral-2)',
+      'var(--tui-chart-categorical-02)',
+    ]);
+  });
+
   it('describes the priority bars as text', async () => {
     const fixture = await renderLoaded();
     const label = testid(fixture, 'priority-chart')?.getAttribute('aria-label') ?? '';
