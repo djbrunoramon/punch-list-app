@@ -6,7 +6,7 @@ export type ValidationMessage = () => string;
 
 /**
  * Returns a factory of language-reactive validation messages (keys under `validation.*`, see
- * `docs/i18n.md`). Call it in an injection context (field initializer) before creating the form.
+ * `docs/conhecimento/modulos/i18n.md`). Call it in an injection context (field initializer) before creating the form.
  *
  * ```ts
  * private readonly message = injectValidationMessages();

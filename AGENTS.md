@@ -2,13 +2,17 @@
 
 Instruções para agentes de código (Claude, Codex, Cursor, Copilot, Gemini etc.). Fonte única: `CLAUDE.md` apenas importa este arquivo.
 
+## Base de conhecimento
+
+- [docs/conhecimento](docs/conhecimento/index.md) (OKF v0.2): ADRs, spec viva por capacidade, débitos abertos e runbooks. O glossário e as regras de negócio estão na base da API. Leia a spec antes de mudar comportamento e atualize-a no mesmo PR; decisão nova vira ADR numerado. O restante de `docs/` é o build antigo publicado: não edite.
+
 ## Visão geral
 
 Front-end Angular para registro de pendências (punch list) de contratos EPC: dashboard com gráficos, cadastro de contratos, responsáveis e pendências, com um contrato selecionado no cabeçalho. Consome a API `punch-list-api` (repositório irmão em `../punch-list-api`).
 
 - Angular 22 (standalone, zoneless, signals, Signal Forms), TypeScript 6 em modo `strict` + `strictTemplates`
 - Taiga UI 5.31 (core, kit, layout, addon-charts, icons); estilos SCSS, tema/fontes Taiga via `.less` em `angular.json`
-- i18n: Transloco 8.4 (`@jsverse/transloco`), idiomas `en` (base/fallback) e `pt-BR`, troca em runtime — padrão em [`docs/i18n.md`](docs/i18n.md)
+- i18n: Transloco 8.4 (`@jsverse/transloco`), idiomas `en` (base/fallback) e `pt-BR`, troca em runtime — padrão em [`docs/conhecimento/modulos/i18n.md`](docs/conhecimento/modulos/i18n.md)
 - Testes: Vitest (+ jsdom) pelo builder `@angular/build:unit-test`
 - Lint: ESLint 10 + angular-eslint + typescript-eslint; formatação: Prettier (`printWidth` 100, aspas simples)
 - Node `^22.22.3 || ^24.15` (exigência do toolchain Angular 22)
@@ -76,7 +80,7 @@ Convenções (várias são impostas pelo `eslint.config.js`, que roda como `erro
 ## i18n (obrigatório em todo texto visível)
 
 - Nenhum texto visível fica fixo em `.html`/`.ts` — inclusive `aria-label`, `title`, estados vazios/erro e rótulos de enum. Use o pipe `transloco` (`{{ 'contracts.title' | transloco }}`); em TS, `translateSignal`/`translateObjectSignal` para o que precisa seguir a troca de idioma e `TranslocoService.translate` para texto pontual.
-- **Padrão de chaves** (detalhes em `docs/i18n.md`): `<escopo>.<área>.<elemento>[.<variante>]`, segmentos lowerCamelCase em inglês; escopos `app`, `common`, `shell`, `contracts`, `responsiblePersons`, `pendencies`, `dashboard`, `validation`, `error`, `enum`. Campo = nome do campo na API (`<feature>.field.<apiField>`, mesma chave na lista e no form); enum = `enum.<enumName>.<VALOR_DA_API>` (única chave dinâmica permitida). A chave descreve o propósito, nunca o texto.
+- **Padrão de chaves** (detalhes em `docs/conhecimento/modulos/i18n.md`): `<escopo>.<área>.<elemento>[.<variante>]`, segmentos lowerCamelCase em inglês; escopos `app`, `common`, `shell`, `contracts`, `responsiblePersons`, `pendencies`, `dashboard`, `validation`, `error`, `enum`. Campo = nome do campo na API (`<feature>.field.<apiField>`, mesma chave na lista e no form); enum = `enum.<enumName>.<VALOR_DA_API>` (única chave dinâmica permitida). A chave descreve o propósito, nunca o texto.
 - Chave nova: primeiro em `public/i18n/en.json`, depois em `pt-BR.json`, em ordem alfabética. `npm test` quebra (`core/i18n/translations.spec.ts`) se faltar chave num idioma, se houver valor vazio, parâmetros diferentes, nome fora do padrão ou ordem errada.
 - Mensagens de validação: `private readonly message = injectValidationMessages();` → `{ message: this.message('validation.required') }` (reativas ao idioma).
 - Datas/moeda: `| date: 'short' : undefined : locale()` e `| currency: 'BRL' : 'symbol' : undefined : locale()`, com `locale = inject(Language).locale`.

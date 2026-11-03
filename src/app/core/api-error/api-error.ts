@@ -23,7 +23,7 @@ export class ApiError extends Error {
   }
 }
 
-/** Translates an i18n key (see `docs/i18n.md`); the identity is used where no translator is available. */
+/** Translates an i18n key (see `docs/conhecimento/modulos/i18n.md`); the identity is used where no translator is available. */
 export type Translate = (key: string) => string;
 
 /** Fallback detail keys when the response is not a problem detail (network, proxy errors...). */

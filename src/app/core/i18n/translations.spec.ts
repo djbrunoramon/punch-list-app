@@ -16,7 +16,7 @@ function flatten(tree: Tree, prefix = ''): Record<string, string> {
 const en = flatten(TRANSLATIONS.en);
 const ptBr = flatten(TRANSLATIONS['pt-BR']);
 
-/** Naming standard (docs/i18n.md): lowerCamelCase ASCII segments; enum values keep the API value. */
+/** Naming standard (docs/conhecimento/modulos/i18n.md): lowerCamelCase ASCII segments; enum values keep the API value. */
 const SEGMENT = /^[a-z][a-zA-Z0-9]*$/;
 const ENUM_VALUE = /^[A-Z][A-Z0-9_]*$/;
 const SCOPES = [
