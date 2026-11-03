@@ -23,12 +23,16 @@ export class ApiError extends Error {
   }
 }
 
-const FALLBACK_DETAIL: Readonly<Record<number, string>> = {
-  0: 'Could not reach the server. Check your connection and try again.',
-  404: 'The requested record was not found.',
-  502: 'The server is unavailable. Try again in a moment.',
-  503: 'The server is unavailable. Try again in a moment.',
-  504: 'The server is unavailable. Try again in a moment.',
+/** Translates an i18n key (see `docs/i18n.md`); the identity is used where no translator is available. */
+export type Translate = (key: string) => string;
+
+/** Fallback detail keys when the response is not a problem detail (network, proxy errors...). */
+const FALLBACK_DETAIL_KEY: Readonly<Record<number, string>> = {
+  0: 'error.network',
+  404: 'error.notFound',
+  502: 'error.serverUnavailable',
+  503: 'error.serverUnavailable',
+  504: 'error.serverUnavailable',
 };
 
 function isProblemDetail(value: unknown): value is ProblemDetail {
@@ -44,13 +48,16 @@ function isFieldError(value: unknown): value is { field: string; message: string
   );
 }
 
-/** Converts anything an HTTP call can fail with into an `ApiError`. Never exposes raw bodies. */
-export function toApiError(error: unknown): ApiError {
+/**
+ * Converts anything an HTTP call can fail with into an `ApiError`. Never exposes raw bodies. Texts sent by
+ * the API (already in the request language) are kept; fallbacks are translated with `translate`.
+ */
+export function toApiError(error: unknown, translate: Translate = (key) => key): ApiError {
   if (error instanceof ApiError) {
     return error;
   }
   if (!(error instanceof HttpErrorResponse)) {
-    return new ApiError(0, 'Unexpected error', 'Something went wrong. Please try again.');
+    return new ApiError(0, translate('error.title.unexpected'), translate('error.unexpected'));
   }
 
   const body: unknown = error.error;
@@ -63,11 +70,12 @@ export function toApiError(error: unknown): ApiError {
     }
   }
 
+  const fallbackKey = FALLBACK_DETAIL_KEY[error.status];
   const detail =
     (typeof problem?.detail === 'string' && problem.detail) ||
-    FALLBACK_DETAIL[error.status] ||
-    'Something went wrong. Please try again.';
-  const title = (typeof problem?.title === 'string' && problem.title) || 'Request failed';
+    translate(fallbackKey ?? 'error.unexpected');
+  const title =
+    (typeof problem?.title === 'string' && problem.title) || translate('error.title.requestFailed');
 
   return new ApiError(error.status, title, detail, fieldErrors);
 }

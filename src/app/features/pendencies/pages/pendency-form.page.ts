@@ -13,12 +13,14 @@ import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiError, TuiInput, TuiNotification } from '@taiga-ui/core';
 import { TuiSelect, TuiTextarea } from '@taiga-ui/kit';
 import { TuiBlockStatus, TuiForm } from '@taiga-ui/layout';
+import { TranslocoPipe, TranslocoService, translateObjectSignal } from '@jsverse/transloco';
 import { firstValueFrom, map } from 'rxjs';
 import { toApiError } from '../../../core/api-error/api-error';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PageState } from '../../../shared/ui/page-state';
 import { fromApiDateTime, toApiDateTime } from '../../../shared/util/date-time';
 import { requiredText } from '../../../shared/util/required-text';
+import { injectValidationMessages } from '../../../shared/util/validation-messages';
 import { toServerFieldErrors } from '../../../shared/util/server-errors';
 import { ResponsiblePersonsApi } from '../../responsible-persons/data-access/responsible-persons.api';
 import { PendenciesApi } from '../data-access/pendencies.api';
@@ -130,6 +132,7 @@ function toRequest(idContract: number, model: PendencyFormModel): PendencyReques
     TuiSelect,
     TuiTextarea,
     PageState,
+    TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pendency-form.page.html',
@@ -137,6 +140,21 @@ function toRequest(idContract: number, model: PendencyFormModel): PendencyReques
 export class PendencyFormPage {
   private readonly api = inject(PendenciesApi);
   private readonly peopleApi = inject(ResponsiblePersonsApi);
+  private readonly transloco = inject(TranslocoService);
+  private readonly message = injectValidationMessages();
+  private readonly maxLength = (field: keyof typeof PENDENCY_LIMITS) => ({
+    message: this.message('validation.maxLength', { max: PENDENCY_LIMITS[field] }),
+  });
+
+  /** Status labels (`enum.pendencyStatus.*`), recomputed when the language changes. */
+  private readonly statusLabels = translateObjectSignal('enum.pendencyStatus');
+  protected readonly stringifyStatus = computed(() => {
+    const labels: Readonly<Record<string, unknown>> = this.statusLabels();
+    return (status: PendencyStatus): string => {
+      const label = labels[status];
+      return typeof label === 'string' ? label : status;
+    };
+  });
   private readonly context = inject(ContractContext);
   private readonly router = inject(Router);
 
@@ -219,41 +237,46 @@ export class PendencyFormPage {
   protected readonly form = form(
     this.model,
     (path) => {
-      requiredText(path.areaIdentification, { message: 'Area is required' });
-      maxLength(path.areaIdentification, PENDENCY_LIMITS.areaIdentification);
-      maxLength(path.tag, PENDENCY_LIMITS.tag);
-      requiredText(path.description, { message: 'Description is required' });
-      maxLength(path.description, PENDENCY_LIMITS.description);
-      requiredText(path.priority, { message: 'Priority is required' });
-      maxLength(path.priority, PENDENCY_LIMITS.priority);
-      requiredText(path.discipline, { message: 'Discipline is required' });
-      maxLength(path.discipline, PENDENCY_LIMITS.discipline);
-      required(path.registeredBy, { message: 'Registered by is required' });
-      required(path.registeredTo, { message: 'Registered to is required' });
+      const isRequired = { message: this.message('validation.required') };
+      requiredText(path.areaIdentification, isRequired);
+      maxLength(
+        path.areaIdentification,
+        PENDENCY_LIMITS.areaIdentification,
+        this.maxLength('areaIdentification'),
+      );
+      maxLength(path.tag, PENDENCY_LIMITS.tag, this.maxLength('tag'));
+      requiredText(path.description, isRequired);
+      maxLength(path.description, PENDENCY_LIMITS.description, this.maxLength('description'));
+      requiredText(path.priority, isRequired);
+      maxLength(path.priority, PENDENCY_LIMITS.priority, this.maxLength('priority'));
+      requiredText(path.discipline, isRequired);
+      maxLength(path.discipline, PENDENCY_LIMITS.discipline, this.maxLength('discipline'));
+      required(path.registeredBy, isRequired);
+      required(path.registeredTo, isRequired);
 
       // The closure fields are mandatory only while the status asks for them (mirrors the API).
       applyWhen(
         path,
         ({ value }) => value().status === 'CLOSED',
         (closed) => {
-          required(closed.finishedBy, { message: 'Finished by is required' });
-          required(closed.finishedAt, { message: 'Finished at is required' });
+          required(closed.finishedBy, isRequired);
+          required(closed.finishedAt, isRequired);
         },
       );
       applyWhen(
         path,
         ({ value }) => value().status === 'DISAPPROVED',
         (disapproved) => {
-          required(disapproved.disapprovedBy, { message: 'Disapproved by is required' });
-          required(disapproved.disapprovedAt, { message: 'Disapproved at is required' });
+          required(disapproved.disapprovedBy, isRequired);
+          required(disapproved.disapprovedAt, isRequired);
         },
       );
       applyWhen(
         path,
         ({ value }) => value().status === 'CANCELED',
         (canceled) => {
-          required(canceled.canceledBy, { message: 'Canceled by is required' });
-          required(canceled.canceledAt, { message: 'Canceled at is required' });
+          required(canceled.canceledBy, isRequired);
+          required(canceled.canceledAt, isRequired);
         },
       );
     },
@@ -263,7 +286,9 @@ export class PendencyFormPage {
           this.submitError.set(null);
           const contractId = this.contractId();
           if (contractId === null) {
-            this.submitError.set('Select a contract first.');
+            this.submitError.set(
+              this.transloco.translate('pendencies.message.selectContractToCreate'),
+            );
             return undefined;
           }
           const request = toRequest(contractId, this.model());
@@ -276,7 +301,7 @@ export class PendencyFormPage {
             if (this.destroyed) {
               return undefined;
             }
-            const apiError = toApiError(error);
+            const apiError = toApiError(error, (key) => this.transloco.translate(key));
             this.submitError.set(apiError.detail);
             return toServerFieldErrors(tree, apiError);
           }

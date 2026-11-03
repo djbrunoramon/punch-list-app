@@ -14,11 +14,13 @@ import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiError, TuiInput, TuiNotification } from '@taiga-ui/core';
 import { TuiTextarea } from '@taiga-ui/kit';
 import { TuiForm } from '@taiga-ui/layout';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { toApiError } from '../../../core/api-error/api-error';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { fromApiDateTime, toApiDateTime } from '../../../shared/util/date-time';
 import { requiredText } from '../../../shared/util/required-text';
+import { injectValidationMessages } from '../../../shared/util/validation-messages';
 import { toServerFieldErrors } from '../../../shared/util/server-errors';
 import { PageState } from '../../../shared/ui/page-state';
 import { ContractsApi } from '../data-access/contracts.api';
@@ -79,6 +81,7 @@ function toRequest(model: ContractFormModel): ContractRequest {
     TuiNotification,
     TuiTextarea,
     PageState,
+    TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './contract-form.page.html',
@@ -115,16 +118,27 @@ export class ContractFormPage {
   /** Non-field error of the last submit (ProblemDetail `detail`). */
   protected readonly submitError = signal<string | null>(null);
 
+  private readonly transloco = inject(TranslocoService);
+  private readonly message = injectValidationMessages();
+  private readonly maxLength = (field: keyof typeof CONTRACT_LIMITS) => ({
+    message: this.message('validation.maxLength', { max: CONTRACT_LIMITS[field] }),
+  });
+
   protected readonly form = form(
     this.model,
     (path) => {
-      requiredText(path.numberContract, { message: 'Contract number is required' });
-      maxLength(path.numberContract, CONTRACT_LIMITS.numberContract);
-      requiredText(path.description, { message: 'Description is required' });
-      maxLength(path.description, CONTRACT_LIMITS.description);
-      requiredText(path.address, { message: 'Address is required' });
-      maxLength(path.address, CONTRACT_LIMITS.address);
-      min(path.estimatedAt, 0, { message: 'Must be zero or more' });
+      const required = { message: this.message('validation.required') };
+      requiredText(path.numberContract, required);
+      maxLength(
+        path.numberContract,
+        CONTRACT_LIMITS.numberContract,
+        this.maxLength('numberContract'),
+      );
+      requiredText(path.description, required);
+      maxLength(path.description, CONTRACT_LIMITS.description, this.maxLength('description'));
+      requiredText(path.address, required);
+      maxLength(path.address, CONTRACT_LIMITS.address, this.maxLength('address'));
+      min(path.estimatedAt, 0, { message: this.message('validation.min', { min: 0 }) });
     },
     {
       submission: {
@@ -140,7 +154,7 @@ export class ContractFormPage {
             if (this.destroyed) {
               return undefined;
             }
-            const apiError = toApiError(error);
+            const apiError = toApiError(error, (key) => this.transloco.translate(key));
             this.submitError.set(apiError.detail);
             return toServerFieldErrors(tree, apiError);
           }

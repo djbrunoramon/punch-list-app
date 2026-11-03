@@ -1,38 +1,42 @@
 <header class="page-header">
-  <h1 class="tui-text_h4">Pendencies</h1>
-  <a tuiButton size="m" routerLink="new">New pendency</a>
+  <h1 class="tui-text_h4">{{ 'pendencies.title' | transloco }}</h1>
+  <a tuiButton size="m" routerLink="new">{{ 'pendencies.list.new' | transloco }}</a>
 </header>
 
 @if (contractsError()) {
   <app-page-state [error]="contractsError()" (retry)="reloadContracts()" />
 } @else if (contractId() === null && !contractsLoading()) {
   <tui-block-status data-testid="no-contract">
-    <h4>Select a contract to see its pendencies</h4>
-    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">Add a contract</a>
+    <h4>{{ 'pendencies.message.selectContractToList' | transloco }}</h4>
+    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">{{
+      'common.action.addContract' | transloco
+    }}</a>
   </tui-block-status>
 } @else {
   <app-page-state
     [loading]="contractsLoading() || pendencies.isLoading()"
     [error]="pendencies.error()"
     [empty]="rows().length === 0"
-    emptyText="No pendencies registered for this contract yet"
+    [emptyText]="'pendencies.list.empty' | transloco"
     (retry)="pendencies.reload()"
   >
-    <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new"
-      >Register the first pendency</a
-    >
+    <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new">{{
+      'pendencies.list.emptyAction' | transloco
+    }}</a>
 
     <div class="table-wrapper">
       <table class="app-table" data-testid="pendencies-table">
         <thead>
           <tr>
-            <th scope="col">Tag</th>
-            <th scope="col">Area</th>
-            <th scope="col">Description</th>
-            <th scope="col">Registered by</th>
-            <th scope="col">Created at</th>
-            <th scope="col">Status</th>
-            <th scope="col"><span class="visually-hidden">Actions</span></th>
+            <th scope="col">{{ 'pendencies.field.tag' | transloco }}</th>
+            <th scope="col">{{ 'pendencies.field.areaIdentification' | transloco }}</th>
+            <th scope="col">{{ 'pendencies.field.description' | transloco }}</th>
+            <th scope="col">{{ 'pendencies.field.registeredBy' | transloco }}</th>
+            <th scope="col">{{ 'pendencies.field.createdAt' | transloco }}</th>
+            <th scope="col">{{ 'pendencies.field.status' | transloco }}</th>
+            <th scope="col">
+              <span class="visually-hidden">{{ 'common.label.actions' | transloco }}</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -42,14 +46,16 @@
               <td>{{ pendency.areaIdentification }}</td>
               <td>{{ pendency.description }}</td>
               <td>{{ pendency.registeredBy.name }}</td>
-              <td>{{ pendency.createdAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+              <td>{{ pendency.createdAt | date: 'short' : undefined : locale() }}</td>
               <td>
                 <span tuiBadge [appearance]="statusAppearance[pendency.status]">
-                  {{ pendency.status }}
+                  {{ 'enum.pendencyStatus.' + pendency.status | transloco }}
                 </span>
               </td>
               <td>
-                <a tuiButton size="xs" appearance="flat" [routerLink]="[pendency.id]">Edit</a>
+                <a tuiButton size="xs" appearance="flat" [routerLink]="[pendency.id]">{{
+                  'common.action.edit' | transloco
+                }}</a>
               </td>
             </tr>
           }
@@ -58,7 +64,12 @@
     </div>
 
     @if (totalPages() > 1) {
-      <tui-pagination class="pagination" [length]="totalPages()" [(index)]="page" />
+      <tui-pagination
+        class="pagination"
+        [attr.aria-label]="'common.label.pagination' | transloco"
+        [length]="totalPages()"
+        [(index)]="page"
+      />
     }
   </app-page-state>
 }

@@ -9,6 +9,7 @@ import { apiErrorInterceptor } from '../../../core/api-error/api-error.intercept
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PriorityCount, StatusCount } from '../data-access/dashboard.models';
 import { DashboardPage } from './dashboard.page';
+import { provideI18nTesting } from '../../../../testing/i18n';
 
 const PIE_URL = (id: number) => `/api/v1/pendency/contract/${id}/chart/pie`;
 const BAR_URL = (id: number, status: string) =>
@@ -43,6 +44,7 @@ describe('DashboardPage', () => {
     TestBed.configureTestingModule({
       imports: [DashboardPage],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),
@@ -109,9 +111,9 @@ describe('DashboardPage', () => {
   it('shows each status with its quantity in the legend', async () => {
     const fixture = await renderLoaded();
     const legend = testid(fixture, 'status-legend')?.textContent ?? '';
-    expect(legend).toContain('OPEN');
+    expect(legend).toContain('Open (5)');
     expect(legend).toContain('5');
-    expect(legend).toContain('CANCELED');
+    expect(legend).toContain('Canceled (1)');
     expect(testid(fixture, 'status-legend')?.querySelectorAll('tui-legend-item').length).toBe(4);
   });
 
@@ -178,10 +180,10 @@ describe('DashboardPage', () => {
   it('calls byPriority with the new status when the filter changes', async () => {
     const fixture = await renderLoaded();
     const select = el(fixture).querySelector<HTMLSelectElement>('#status-filter');
-    expect(select?.value).toBe('OPEN');
+    expect(select?.value).toBe('Open');
 
     select!.selectedIndex = Array.from(select!.options).findIndex(
-      (o) => o.textContent?.trim() === 'CLOSED',
+      (o) => o.textContent?.trim() === 'Closed',
     );
     select!.dispatchEvent(new Event('change'));
     fixture.detectChanges();
@@ -201,7 +203,7 @@ describe('DashboardPage', () => {
 
     const select = el(fixture).querySelector<HTMLSelectElement>('#status-filter');
     select!.selectedIndex = Array.from(select!.options).findIndex(
-      (o) => o.textContent?.trim() === 'CLOSED',
+      (o) => o.textContent?.trim() === 'Closed',
     );
     select!.dispatchEvent(new Event('change'));
     fixture.detectChanges();
@@ -229,7 +231,7 @@ describe('DashboardPage', () => {
     expectGet(BAR_URL(2, 'OPEN')).flush([{ priority: 'LOW', quantity: 3 }]);
     await fixture.whenStable();
 
-    expect(testid(fixture, 'status-legend')?.textContent).toContain('OPEN (9)');
+    expect(testid(fixture, 'status-legend')?.textContent).toContain('Open (9)');
     expect(testid(fixture, 'priority-chart')?.getAttribute('aria-label')).toContain('LOW: 3');
     expect(testid(fixture, 'priority-chart')?.getAttribute('aria-label')).not.toContain('HIGH');
   });

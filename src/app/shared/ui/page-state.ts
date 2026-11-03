@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { TuiButton, TuiLoader, TuiNotification } from '@taiga-ui/core';
 import { TuiBlockStatus } from '@taiga-ui/layout';
 import { ApiError } from '../../core/api-error/api-error';
@@ -8,28 +9,33 @@ import { ApiError } from '../../core/api-error/api-error';
  *
  * ```html
  * <app-page-state [loading]="res.isLoading()" [error]="res.error()" [empty]="!rows().length"
- *                 emptyText="No contracts yet" (retry)="res.reload()">
+ *                 [emptyText]="'contracts.list.empty' | transloco" (retry)="res.reload()">
  *   ...content...
  * </app-page-state>
  * ```
  */
 @Component({
   selector: 'app-page-state',
-  imports: [TuiLoader, TuiNotification, TuiButton, TuiBlockStatus],
+  imports: [TuiLoader, TuiNotification, TuiButton, TuiBlockStatus, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (error(); as err) {
       <div tuiNotification appearance="negative" role="alert" data-testid="page-error">
         {{ message(err) }}
         <button tuiButton type="button" size="s" appearance="secondary" (click)="retry.emit()">
-          Try again
+          {{ 'common.action.retry' | transloco }}
         </button>
       </div>
     } @else if (loading()) {
-      <tui-loader size="l" class="state" data-testid="page-loading" />
+      <tui-loader
+        size="l"
+        class="state"
+        data-testid="page-loading"
+        [attr.aria-label]="'common.state.loading' | transloco"
+      />
     } @else if (empty()) {
       <tui-block-status class="state" data-testid="page-empty">
-        <h4>{{ emptyText() }}</h4>
+        <h4>{{ emptyText() ?? ('common.state.empty' | transloco) }}</h4>
         <ng-content select="[empty-actions]" />
       </tui-block-status>
     } @else {
@@ -52,10 +58,13 @@ export class PageState {
   readonly loading = input(false);
   readonly error = input<unknown>(undefined);
   readonly empty = input(false);
-  readonly emptyText = input('Nothing here yet');
+  /** Already translated text; defaults to `common.state.empty`. */
+  readonly emptyText = input<string>();
   readonly retry = output();
 
+  private readonly transloco = inject(TranslocoService);
+
   protected message(error: unknown): string {
-    return error instanceof ApiError ? error.detail : 'Something went wrong. Please try again.';
+    return error instanceof ApiError ? error.detail : this.transloco.translate('error.unexpected');
   }
 }

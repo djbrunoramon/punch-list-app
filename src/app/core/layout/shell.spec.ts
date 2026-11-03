@@ -6,6 +6,7 @@ import { provideTaiga } from '@taiga-ui/core';
 import { aContract } from '../../../testing/fixtures';
 import { ContractContext } from '../contract-context/contract-context';
 import { Shell } from './shell';
+import { provideI18nTesting } from '../../../testing/i18n';
 
 describe('Shell', () => {
   let httpTesting: HttpTestingController;
@@ -15,6 +16,7 @@ describe('Shell', () => {
     TestBed.configureTestingModule({
       imports: [Shell],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -70,7 +72,7 @@ describe('Shell', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Contracts unavailable');
     const retry = Array.from(el.querySelectorAll('button')).find(
-      (b) => b.textContent?.trim() === 'Retry',
+      (b) => b.textContent?.trim() === 'Try again',
     );
     expect(retry).toBeDefined();
 
@@ -81,5 +83,22 @@ describe('Shell', () => {
 
     expect(el.textContent).not.toContain('Contracts unavailable');
     expect(el.querySelector('[data-testid="contract-selector"]')).not.toBeNull();
+  });
+
+  it('switches the language from the header', async () => {
+    const fixture = await render([aContract({ id: 1, numberContract: 'A-1' })]);
+    const el = fixture.nativeElement as HTMLElement;
+    const nav = () => el.querySelector('nav')?.textContent ?? '';
+    expect(nav()).toContain('Dashboard');
+
+    el.querySelector<HTMLButtonElement>('[data-testid="language-pt-BR"]')!.click();
+    await fixture.whenStable();
+
+    expect(nav()).toContain('Painel');
+    expect(nav()).toContain('Pendências');
+    expect(el.querySelector('[data-testid="language-pt-BR"]')?.getAttribute('aria-pressed')).toBe(
+      'true',
+    );
+    expect(document.documentElement.lang).toBe('pt-BR');
   });
 });

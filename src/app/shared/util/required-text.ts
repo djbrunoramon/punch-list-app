@@ -5,6 +5,7 @@ import {
   requiredError,
   validate,
 } from '@angular/forms/signals';
+import { ValidationMessage } from './validation-messages';
 
 /**
  * `required` for text fields that the API validates with `@NotBlank`: besides the empty string,
@@ -13,11 +14,15 @@ import {
  */
 export function requiredText(
   path: SchemaPath<string, SchemaPathRules.Supported>,
-  config: { message: string },
+  config: { message: string | ValidationMessage },
 ): void {
   required(path, config);
   validate(path, ({ value }) => {
     const text = value();
-    return text !== '' && text.trim() === '' ? requiredError(config) : undefined;
+    if (text === '' || text.trim() !== '') {
+      return undefined;
+    }
+    const message = typeof config.message === 'function' ? config.message() : config.message;
+    return requiredError({ message });
   });
 }

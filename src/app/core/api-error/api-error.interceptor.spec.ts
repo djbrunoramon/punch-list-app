@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { ApiError, toApiError } from './api-error';
 import { apiErrorInterceptor } from './api-error.interceptor';
+import { provideI18nTesting } from '../../../testing/i18n';
 
 describe('apiErrorInterceptor', () => {
   let http: HttpClient;
@@ -12,6 +13,7 @@ describe('apiErrorInterceptor', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideI18nTesting(),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),
       ],

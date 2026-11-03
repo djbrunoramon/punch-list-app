@@ -12,11 +12,13 @@ import { FormField, FormRoot, form, maxLength } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiError, TuiInput, TuiNotification } from '@taiga-ui/core';
 import { TuiBlockStatus, TuiForm } from '@taiga-ui/layout';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { toApiError } from '../../../core/api-error/api-error';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PageState } from '../../../shared/ui/page-state';
 import { requiredText } from '../../../shared/util/required-text';
+import { injectValidationMessages } from '../../../shared/util/validation-messages';
 import { toServerFieldErrors } from '../../../shared/util/server-errors';
 import { ResponsiblePersonsApi } from '../data-access/responsible-persons.api';
 import {
@@ -66,12 +68,18 @@ function toRequest(
     TuiInput,
     TuiNotification,
     PageState,
+    TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './responsible-person-form.page.html',
 })
 export class ResponsiblePersonFormPage {
   private readonly api = inject(ResponsiblePersonsApi);
+  private readonly transloco = inject(TranslocoService);
+  private readonly message = injectValidationMessages();
+  private readonly maxLength = (field: keyof typeof RESPONSIBLE_PERSON_LIMITS) => ({
+    message: this.message('validation.maxLength', { max: RESPONSIBLE_PERSON_LIMITS[field] }),
+  });
   private readonly context = inject(ContractContext);
   private readonly router = inject(Router);
 
@@ -127,12 +135,21 @@ export class ResponsiblePersonFormPage {
   protected readonly form = form(
     this.model,
     (path) => {
-      requiredText(path.name, { message: 'Name is required' });
-      maxLength(path.name, RESPONSIBLE_PERSON_LIMITS.name);
-      requiredText(path.occupation, { message: 'Occupation is required' });
-      maxLength(path.occupation, RESPONSIBLE_PERSON_LIMITS.occupation);
-      requiredText(path.department, { message: 'Department is required' });
-      maxLength(path.department, RESPONSIBLE_PERSON_LIMITS.department);
+      const required = { message: this.message('validation.required') };
+      requiredText(path.name, required);
+      maxLength(path.name, RESPONSIBLE_PERSON_LIMITS.name, this.maxLength('name'));
+      requiredText(path.occupation, required);
+      maxLength(
+        path.occupation,
+        RESPONSIBLE_PERSON_LIMITS.occupation,
+        this.maxLength('occupation'),
+      );
+      requiredText(path.department, required);
+      maxLength(
+        path.department,
+        RESPONSIBLE_PERSON_LIMITS.department,
+        this.maxLength('department'),
+      );
     },
     {
       submission: {
@@ -140,7 +157,9 @@ export class ResponsiblePersonFormPage {
           this.submitError.set(null);
           const contractId = this.contractId();
           if (contractId === null) {
-            this.submitError.set('Select a contract first.');
+            this.submitError.set(
+              this.transloco.translate('responsiblePersons.message.selectContractToCreate'),
+            );
             return undefined;
           }
           const request = toRequest(contractId, this.model());
@@ -153,7 +172,7 @@ export class ResponsiblePersonFormPage {
             if (this.destroyed) {
               return undefined;
             }
-            const apiError = toApiError(error);
+            const apiError = toApiError(error, (key) => this.transloco.translate(key));
             this.submitError.set(apiError.detail);
             return toServerFieldErrors(tree, apiError);
           }

@@ -1,37 +1,41 @@
 <header class="page-header">
-  <h1 class="tui-text_h4">Responsible persons</h1>
-  <a tuiButton size="m" routerLink="new">New responsible person</a>
+  <h1 class="tui-text_h4">{{ 'responsiblePersons.title' | transloco }}</h1>
+  <a tuiButton size="m" routerLink="new">{{ 'responsiblePersons.list.new' | transloco }}</a>
 </header>
 
 @if (contractsError()) {
   <app-page-state [error]="contractsError()" (retry)="reloadContracts()" />
 } @else if (contractId() === null && !contractsLoading()) {
   <tui-block-status data-testid="no-contract">
-    <h4>Select a contract to see its responsible persons</h4>
-    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">Add a contract</a>
+    <h4>{{ 'responsiblePersons.message.selectContractToList' | transloco }}</h4>
+    <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">{{
+      'common.action.addContract' | transloco
+    }}</a>
   </tui-block-status>
 } @else {
   <app-page-state
     [loading]="contractsLoading() || people.isLoading()"
     [error]="people.error()"
     [empty]="rows().length === 0"
-    emptyText="No responsible persons registered for this contract yet"
+    [emptyText]="'responsiblePersons.list.empty' | transloco"
     (retry)="people.reload()"
   >
-    <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new"
-      >Register the first responsible person</a
-    >
+    <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new">{{
+      'responsiblePersons.list.emptyAction' | transloco
+    }}</a>
 
     <div class="table-wrapper">
       <table class="app-table" data-testid="responsible-persons-table">
         <thead>
           <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Occupation</th>
-            <th scope="col">Department</th>
-            <th scope="col">Registered at</th>
-            <th scope="col">Status</th>
-            <th scope="col"><span class="visually-hidden">Actions</span></th>
+            <th scope="col">{{ 'responsiblePersons.field.name' | transloco }}</th>
+            <th scope="col">{{ 'responsiblePersons.field.occupation' | transloco }}</th>
+            <th scope="col">{{ 'responsiblePersons.field.department' | transloco }}</th>
+            <th scope="col">{{ 'responsiblePersons.field.createdAt' | transloco }}</th>
+            <th scope="col">{{ 'common.label.status' | transloco }}</th>
+            <th scope="col">
+              <span class="visually-hidden">{{ 'common.label.actions' | transloco }}</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -40,14 +44,21 @@
               <td>{{ person.name }}</td>
               <td>{{ person.occupation }}</td>
               <td>{{ person.department }}</td>
-              <td>{{ person.createdAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+              <td>{{ person.createdAt | date: 'short' : undefined : locale() }}</td>
               <td>
                 <span tuiBadge [appearance]="person.active ? 'positive' : 'neutral'">
-                  {{ person.active ? 'Active' : 'Inactive' }}
+                  {{
+                    (person.active
+                      ? 'responsiblePersons.list.active'
+                      : 'responsiblePersons.list.inactive'
+                    ) | transloco
+                  }}
                 </span>
               </td>
               <td>
-                <a tuiButton size="xs" appearance="flat" [routerLink]="[person.id]">Edit</a>
+                <a tuiButton size="xs" appearance="flat" [routerLink]="[person.id]">{{
+                  'common.action.edit' | transloco
+                }}</a>
               </td>
             </tr>
           }
@@ -56,7 +67,12 @@
     </div>
 
     @if (totalPages() > 1) {
-      <tui-pagination class="pagination" [length]="totalPages()" [(index)]="page" />
+      <tui-pagination
+        class="pagination"
+        [attr.aria-label]="'common.label.pagination' | transloco"
+        [length]="totalPages()"
+        [(index)]="page"
+      />
     }
   </app-page-state>
 }

@@ -9,6 +9,7 @@ import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PendencyListPage } from './pendency-list.page';
+import { provideI18nTesting } from '../../../../testing/i18n';
 
 const LIST_URL = (id: number) => `/api/v1/pendency/contract/${id}`;
 
@@ -27,6 +28,7 @@ describe('PendencyListPage', () => {
     TestBed.configureTestingModule({
       imports: [PendencyListPage],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),
@@ -113,7 +115,7 @@ describe('PendencyListPage', () => {
     expect(rows[0].textContent).toContain('Area 51');
     expect(rows[0].textContent).toContain('Maria Souza');
     expect(rows[1].textContent).toContain('TAG-7');
-    expect(rows[1].textContent).toContain('CLOSED');
+    expect(rows[1].textContent).toContain('Closed');
     expect(rows[1].querySelector('a')?.getAttribute('href')).toBe('/7');
     expect(el(fixture).querySelector('tui-pagination')).toBeNull(); // single page
   });

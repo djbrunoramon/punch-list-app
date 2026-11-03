@@ -5,11 +5,13 @@ import { TuiButton, TuiInput, TuiLoader } from '@taiga-ui/core';
 import { TuiSelect } from '@taiga-ui/kit';
 import { Contract } from '../../features/contracts/data-access/contracts.models';
 import { ContractContext } from '../contract-context/contract-context';
+import { LanguageSwitcher } from '../i18n/language-switcher';
 import { ThemeToggle } from '../theme/theme-toggle';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 interface NavLink {
   path: string;
-  label: string;
+  labelKey: string;
   exact: boolean;
 }
 
@@ -17,6 +19,8 @@ interface NavLink {
   selector: 'app-shell',
   imports: [
     ThemeToggle,
+    LanguageSwitcher,
+    TranslocoPipe,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
@@ -37,10 +41,10 @@ export class Shell {
   protected readonly selection = form(this.context.selected);
 
   protected readonly links: readonly NavLink[] = [
-    { path: '/', label: 'Dashboard', exact: true },
-    { path: '/contracts', label: 'Contracts', exact: false },
-    { path: '/responsible-persons', label: 'Responsible persons', exact: false },
-    { path: '/pendencies', label: 'Pendencies', exact: false },
+    { path: '/', labelKey: 'shell.nav.dashboard', exact: true },
+    { path: '/contracts', labelKey: 'shell.nav.contracts', exact: false },
+    { path: '/responsible-persons', labelKey: 'shell.nav.responsiblePersons', exact: false },
+    { path: '/pendencies', labelKey: 'shell.nav.pendencies', exact: false },
   ];
 
   protected readonly stringify = (contract: Contract | null): string =>

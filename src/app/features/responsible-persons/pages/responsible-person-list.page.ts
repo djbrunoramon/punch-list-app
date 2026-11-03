@@ -2,10 +2,12 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiBadge, TuiPagination } from '@taiga-ui/kit';
 import { TuiBlockStatus } from '@taiga-ui/layout';
 import { ContractContext } from '../../../core/contract-context/contract-context';
+import { Language } from '../../../core/i18n/language';
 import { PageState } from '../../../shared/ui/page-state';
 import { ResponsiblePersonsApi } from '../data-access/responsible-persons.api';
 
@@ -14,12 +16,22 @@ const PAGE_SIZE = 10;
 /** Responsible persons of the selected contract (EXT-02), paginated by the server. */
 @Component({
   selector: 'app-responsible-person-list-page',
-  imports: [RouterLink, DatePipe, TuiButton, TuiBadge, TuiBlockStatus, TuiPagination, PageState],
+  imports: [
+    RouterLink,
+    DatePipe,
+    TuiButton,
+    TuiBadge,
+    TuiBlockStatus,
+    TuiPagination,
+    PageState,
+    TranslocoPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './responsible-person-list.page.html',
 })
 export class ResponsiblePersonListPage {
   private readonly api = inject(ResponsiblePersonsApi);
+  protected readonly locale = inject(Language).locale;
   private readonly context = inject(ContractContext);
 
   protected readonly contractId = this.context.selectedId;

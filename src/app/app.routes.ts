@@ -9,7 +9,7 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        title: 'Dashboard',
+        title: 'dashboard.title',
         loadComponent: () =>
           import('./features/dashboard/pages/dashboard.page').then((m) => m.DashboardPage),
       },

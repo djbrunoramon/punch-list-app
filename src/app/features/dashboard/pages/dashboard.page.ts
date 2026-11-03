@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormField, form } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe, translateObjectSignal } from '@jsverse/transloco';
 import { TuiAxes, TuiBarChart, TuiLegendItem, TuiPieChart } from '@taiga-ui/addon-charts';
 import { TuiButton, TuiInput } from '@taiga-ui/core';
 import { TuiSelect } from '@taiga-ui/kit';
@@ -26,6 +27,7 @@ import { DashboardApi } from '../data-access/dashboard.api';
     TuiPieChart,
     TuiSelect,
     PageState,
+    TranslocoPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.page.html',
@@ -41,7 +43,7 @@ export class DashboardPage {
 
   protected readonly statuses = PENDENCY_STATUSES;
   /** Status the bars are filtered by; edited through the select. */
-  private readonly status = signal<PendencyStatus>('OPEN');
+  protected readonly status = signal<PendencyStatus>('OPEN');
   protected readonly filter = form(this.status);
 
   protected readonly byStatus = rxResource({
@@ -101,13 +103,22 @@ export class DashboardPage {
     const max = this.priorityMax();
     return ['0', String(Math.round(max / 2)), String(max)];
   });
-  protected readonly priorityDescription = computed(
-    () =>
-      `Pendencies ${this.status()} by priority: ` +
-      this.priorityCounts()
-        .map((p) => `${p.priority}: ${p.quantity}`)
-        .join(', '),
+  /** Data part of the bar chart text alternative (`dashboard.priority.description`). */
+  protected readonly priorityValuesText = computed(() =>
+    this.priorityCounts()
+      .map((p) => `${p.priority}: ${p.quantity}`)
+      .join(', '),
   );
+
+  /** Status labels (`enum.pendencyStatus.*`) for the filter, recomputed on language change. */
+  private readonly statusLabels = translateObjectSignal('enum.pendencyStatus');
+  protected readonly stringifyStatus = computed(() => {
+    const labels: Readonly<Record<string, unknown>> = this.statusLabels();
+    return (status: PendencyStatus): string => {
+      const label = labels[status];
+      return typeof label === 'string' ? label : status;
+    };
+  });
 
   protected reloadContracts(): void {
     this.context.reload();

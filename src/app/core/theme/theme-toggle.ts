@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { TUI_DARK_MODE, TuiButton } from '@taiga-ui/core';
 
 /**
@@ -7,7 +8,7 @@ import { TUI_DARK_MODE, TuiButton } from '@taiga-ui/core';
  */
 @Component({
   selector: 'app-theme-toggle',
-  imports: [TuiButton],
+  imports: [TuiButton, TranslocoPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <button
@@ -16,16 +17,16 @@ import { TUI_DARK_MODE, TuiButton } from '@taiga-ui/core';
       size="s"
       appearance="flat"
       [iconStart]="dark() ? '@tui.sun' : '@tui.moon'"
-      [attr.aria-label]="label()"
+      [attr.aria-label]="labelKey() | transloco"
       [attr.aria-pressed]="dark()"
-      [attr.title]="label()"
+      [attr.title]="labelKey() | transloco"
       (click)="dark.set(!dark())"
     ></button>
   `,
 })
 export class ThemeToggle {
   protected readonly dark = inject(TUI_DARK_MODE);
-  protected readonly label = computed(() =>
-    this.dark() ? 'Switch to light theme' : 'Switch to dark theme',
+  protected readonly labelKey = computed(() =>
+    this.dark() ? 'shell.theme.toLight' : 'shell.theme.toDark',
   );
 }

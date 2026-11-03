@@ -7,6 +7,7 @@ import { aContract } from '../../../../testing/fixtures';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { ContractFormPage } from './contract-form.page';
+import { provideI18nTesting } from '../../../../testing/i18n';
 
 describe('ContractFormPage', () => {
   let httpTesting: HttpTestingController;
@@ -17,6 +18,7 @@ describe('ContractFormPage', () => {
     TestBed.configureTestingModule({
       imports: [ContractFormPage],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),
@@ -81,8 +83,8 @@ describe('ContractFormPage', () => {
     await submit(fixture);
 
     httpTesting.expectNone({ method: 'POST' });
-    expect(el(fixture).textContent).toContain('Contract number is required');
-    expect(el(fixture).textContent).toContain('Address is required');
+    expect(el(fixture).textContent).toContain('Required field');
+    expect(el(fixture).textContent).toContain('Required field');
   });
 
   it('rejects whitespace-only required text without calling the API', async () => {
@@ -94,9 +96,9 @@ describe('ContractFormPage', () => {
     await submit(fixture);
 
     httpTesting.expectNone({ method: 'POST' });
-    expect(el(fixture).textContent).toContain('Contract number is required');
-    expect(el(fixture).textContent).toContain('Description is required');
-    expect(el(fixture).textContent).toContain('Address is required');
+    expect(el(fixture).textContent).toContain('Required field');
+    expect(el(fixture).textContent).toContain('Required field');
+    expect(el(fixture).textContent).toContain('Required field');
   });
 
   it('mirrors the API length limits on the inputs (AM-07)', async () => {
@@ -116,7 +118,7 @@ describe('ContractFormPage', () => {
     await submit(fixture);
 
     httpTesting.expectNone({ method: 'POST' });
-    expect(el(fixture).textContent).toContain('Must be zero or more');
+    expect(el(fixture).textContent).toContain('Must be 0 or more');
   });
 
   it('creates the contract and goes back to the list', async () => {

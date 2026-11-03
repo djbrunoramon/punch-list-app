@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TUI_DARK_MODE, provideTaiga } from '@taiga-ui/core';
 import { ThemeToggle } from './theme-toggle';
+import { provideI18nTesting } from '../../../testing/i18n';
 
 describe('ThemeToggle', () => {
   const dark = Object.assign(signal(false), { reset: vi.fn() });
@@ -10,7 +11,7 @@ describe('ThemeToggle', () => {
     dark.set(false);
     TestBed.configureTestingModule({
       imports: [ThemeToggle],
-      providers: [provideTaiga(), { provide: TUI_DARK_MODE, useValue: dark }],
+      providers: [provideI18nTesting(), provideTaiga(), { provide: TUI_DARK_MODE, useValue: dark }],
     });
   });
 

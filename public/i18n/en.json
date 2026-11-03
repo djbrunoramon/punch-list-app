@@ -1,0 +1,178 @@
+{
+  "app": {
+    "name": "Punch List"
+  },
+  "common": {
+    "action": {
+      "addContract": "Add a contract",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "retry": "Try again",
+      "save": "Save"
+    },
+    "label": {
+      "actions": "Actions",
+      "pagination": "Pages",
+      "status": "Status"
+    },
+    "state": {
+      "empty": "Nothing here yet",
+      "loading": "Loading"
+    }
+  },
+  "contracts": {
+    "field": {
+      "address": "Address",
+      "description": "Description",
+      "estimatedAt": "Estimated value",
+      "numberContract": "Contract number",
+      "scheduledTo": "Scheduled to",
+      "startAt": "Start at"
+    },
+    "form": {
+      "estimatedAtBrl": "Estimated value (BRL)",
+      "title": {
+        "create": "New contract",
+        "edit": "Edit contract"
+      }
+    },
+    "list": {
+      "active": "Active",
+      "empty": "No contracts registered yet",
+      "emptyAction": "Register the first contract",
+      "inactive": "Inactive",
+      "new": "New contract"
+    },
+    "title": "Contracts"
+  },
+  "dashboard": {
+    "message": {
+      "noPendencies": "No pendencies yet",
+      "selectContract": "Select a contract to see its dashboard"
+    },
+    "priority": {
+      "description": "{{ status }} pendencies by priority: {{ values }}",
+      "empty": "No pendencies with this status",
+      "statusFilter": "Status",
+      "title": "By priority"
+    },
+    "status": {
+      "legendItem": "{{ status }} ({{ count }})",
+      "title": "By status"
+    },
+    "title": "Dashboard"
+  },
+  "enum": {
+    "pendencyStatus": {
+      "CANCELED": "Canceled",
+      "CLOSED": "Closed",
+      "DISAPPROVED": "Disapproved",
+      "OPEN": "Open"
+    }
+  },
+  "error": {
+    "network": "Could not reach the server. Check your connection and try again.",
+    "notFound": "The requested record was not found.",
+    "serverUnavailable": "The server is unavailable. Try again in a moment.",
+    "title": {
+      "requestFailed": "Request failed",
+      "unexpected": "Unexpected error"
+    },
+    "unexpected": "Something went wrong. Please try again."
+  },
+  "pendencies": {
+    "field": {
+      "areaIdentification": "Area",
+      "canceledAt": "Canceled at",
+      "canceledBy": "Canceled by",
+      "createdAt": "Created at",
+      "description": "Description",
+      "disapprovedAt": "Disapproved at",
+      "disapprovedBy": "Disapproved by",
+      "discipline": "Discipline",
+      "expectedIn": "Expected in",
+      "finishedAt": "Finished at",
+      "finishedBy": "Finished by",
+      "priority": "Priority",
+      "registeredBy": "Registered by",
+      "registeredTo": "Registered to",
+      "status": "Status",
+      "tag": "Tag"
+    },
+    "form": {
+      "title": {
+        "create": "New pendency",
+        "edit": "Edit pendency"
+      }
+    },
+    "list": {
+      "empty": "No pendencies registered for this contract yet",
+      "emptyAction": "Register the first pendency",
+      "new": "New pendency"
+    },
+    "message": {
+      "selectContractToCreate": "Select a contract before registering a pendency",
+      "selectContractToList": "Select a contract to see its pendencies"
+    },
+    "title": "Pendencies"
+  },
+  "responsiblePersons": {
+    "field": {
+      "createdAt": "Registered at",
+      "department": "Department",
+      "name": "Name",
+      "occupation": "Occupation"
+    },
+    "form": {
+      "title": {
+        "create": "New responsible person",
+        "edit": "Edit responsible person"
+      }
+    },
+    "list": {
+      "active": "Active",
+      "empty": "No responsible persons registered for this contract yet",
+      "emptyAction": "Register the first responsible person",
+      "inactive": "Inactive",
+      "new": "New responsible person"
+    },
+    "message": {
+      "selectContractToCreate": "Select a contract before registering a responsible person",
+      "selectContractToList": "Select a contract to see its responsible persons"
+    },
+    "title": "Responsible persons"
+  },
+  "shell": {
+    "contractSelector": {
+      "label": "Contract",
+      "unavailable": "Contracts unavailable"
+    },
+    "language": {
+      "label": "Language",
+      "name": {
+        "en": "English",
+        "ptBr": "Portuguese (Brazil)"
+      },
+      "short": {
+        "en": "EN",
+        "ptBr": "PT-BR"
+      }
+    },
+    "nav": {
+      "contracts": "Contracts",
+      "dashboard": "Dashboard",
+      "label": "Main",
+      "pendencies": "Pendencies",
+      "responsiblePersons": "Responsible persons"
+    },
+    "theme": {
+      "toDark": "Switch to dark theme",
+      "toLight": "Switch to light theme"
+    }
+  },
+  "validation": {
+    "maxLength": "Maximum {{ max }} characters",
+    "min": "Must be {{ min }} or more",
+    "required": "Required field"
+  }
+}

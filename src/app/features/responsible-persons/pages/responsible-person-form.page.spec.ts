@@ -9,6 +9,7 @@ import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { ResponsiblePersonFormPage } from './responsible-person-form.page';
+import { provideI18nTesting } from '../../../../testing/i18n';
 
 const URL = '/api/v1/responsible-person';
 
@@ -26,6 +27,7 @@ describe('ResponsiblePersonFormPage', () => {
     TestBed.configureTestingModule({
       imports: [ResponsiblePersonFormPage],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),
@@ -95,9 +97,9 @@ describe('ResponsiblePersonFormPage', () => {
     await submit(fixture);
 
     httpTesting.expectNone({ method: 'POST' });
-    expect(el(fixture).textContent).toContain('Name is required');
-    expect(el(fixture).textContent).toContain('Occupation is required');
-    expect(el(fixture).textContent).toContain('Department is required');
+    expect(el(fixture).textContent).toContain('Required field');
+    expect(el(fixture).textContent).toContain('Required field');
+    expect(el(fixture).textContent).toContain('Required field');
   });
 
   it('rejects whitespace-only required text without calling the API', async () => {
@@ -109,9 +111,9 @@ describe('ResponsiblePersonFormPage', () => {
     await submit(fixture);
 
     httpTesting.expectNone({ method: 'POST' });
-    expect(el(fixture).textContent).toContain('Name is required');
-    expect(el(fixture).textContent).toContain('Occupation is required');
-    expect(el(fixture).textContent).toContain('Department is required');
+    expect(el(fixture).textContent).toContain('Required field');
+    expect(el(fixture).textContent).toContain('Required field');
+    expect(el(fixture).textContent).toContain('Required field');
   });
 
   it('mirrors the API length limits on the inputs and blocks longer values (AM-07)', async () => {

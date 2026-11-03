@@ -6,6 +6,7 @@ import { provideTaiga } from '@taiga-ui/core';
 import { aContract } from '../../../../testing/fixtures';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractListPage } from './contract-list.page';
+import { provideI18nTesting } from '../../../../testing/i18n';
 
 describe('ContractListPage', () => {
   let httpTesting: HttpTestingController;
@@ -14,6 +15,7 @@ describe('ContractListPage', () => {
     TestBed.configureTestingModule({
       imports: [ContractListPage],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),

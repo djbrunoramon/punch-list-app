@@ -1,31 +1,33 @@
 <header class="page-header">
-  <h1 class="tui-text_h4">Contracts</h1>
-  <a tuiButton size="m" routerLink="new">New contract</a>
+  <h1 class="tui-text_h4">{{ 'contracts.title' | transloco }}</h1>
+  <a tuiButton size="m" routerLink="new">{{ 'contracts.list.new' | transloco }}</a>
 </header>
 
 <app-page-state
   [loading]="contracts.isLoading()"
   [error]="contracts.error()"
   [empty]="rows().length === 0"
-  emptyText="No contracts registered yet"
+  [emptyText]="'contracts.list.empty' | transloco"
   (retry)="contracts.reload()"
 >
-  <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new"
-    >Register the first contract</a
-  >
+  <a empty-actions tuiButton size="s" appearance="secondary" routerLink="new">{{
+    'contracts.list.emptyAction' | transloco
+  }}</a>
 
   <div class="table-wrapper">
     <table class="app-table" data-testid="contracts-table">
       <thead>
         <tr>
-          <th scope="col">Number</th>
-          <th scope="col">Description</th>
-          <th scope="col">Address</th>
-          <th scope="col">Start</th>
-          <th scope="col">Scheduled to</th>
-          <th scope="col">Estimated</th>
-          <th scope="col">Status</th>
-          <th scope="col"><span class="visually-hidden">Actions</span></th>
+          <th scope="col">{{ 'contracts.field.numberContract' | transloco }}</th>
+          <th scope="col">{{ 'contracts.field.description' | transloco }}</th>
+          <th scope="col">{{ 'contracts.field.address' | transloco }}</th>
+          <th scope="col">{{ 'contracts.field.startAt' | transloco }}</th>
+          <th scope="col">{{ 'contracts.field.scheduledTo' | transloco }}</th>
+          <th scope="col">{{ 'contracts.field.estimatedAt' | transloco }}</th>
+          <th scope="col">{{ 'common.label.status' | transloco }}</th>
+          <th scope="col">
+            <span class="visually-hidden">{{ 'common.label.actions' | transloco }}</span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -34,16 +36,21 @@
             <td>{{ contract.numberContract }}</td>
             <td>{{ contract.description }}</td>
             <td>{{ contract.address }}</td>
-            <td>{{ contract.startAt | date: 'yyyy-MM-dd HH:mm' }}</td>
-            <td>{{ contract.scheduledTo | date: 'yyyy-MM-dd HH:mm' }}</td>
-            <td>{{ contract.estimatedAt | currency: 'BRL' }}</td>
+            <td>{{ contract.startAt | date: 'short' : undefined : locale() }}</td>
+            <td>{{ contract.scheduledTo | date: 'short' : undefined : locale() }}</td>
+            <td>{{ contract.estimatedAt | currency: 'BRL' : 'symbol' : undefined : locale() }}</td>
             <td>
               <span tuiBadge [appearance]="contract.active ? 'positive' : 'neutral'">
-                {{ contract.active ? 'Active' : 'Inactive' }}
+                {{
+                  (contract.active ? 'contracts.list.active' : 'contracts.list.inactive')
+                    | transloco
+                }}
               </span>
             </td>
             <td>
-              <a tuiButton size="xs" appearance="flat" [routerLink]="[contract.id]">Edit</a>
+              <a tuiButton size="xs" appearance="flat" [routerLink]="[contract.id]">{{
+                'common.action.edit' | transloco
+              }}</a>
             </td>
           </tr>
         }

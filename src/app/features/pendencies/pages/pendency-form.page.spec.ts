@@ -15,6 +15,8 @@ import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PendencyFormPage } from './pendency-form.page';
+import { TRANSLATIONS, provideI18nTesting } from '../../../../testing/i18n';
+import { PendencyStatus } from '../data-access/pendencies.models';
 
 const URL = '/api/v1/pendency';
 const PEOPLE_URL = (contractId: number) => `/api/v1/responsible-person/contract/${contractId}`;
@@ -38,6 +40,7 @@ describe('PendencyFormPage', () => {
     TestBed.configureTestingModule({
       imports: [PendencyFormPage],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),
@@ -131,8 +134,9 @@ describe('PendencyFormPage', () => {
     await fixture.whenStable();
   }
 
-  async function setStatus(fixture: Fixture, status: string): Promise<void> {
-    choose(fixture, 'status', status);
+  /** Picks a status by its translated (en) label, as the user sees it. */
+  async function setStatus(fixture: Fixture, status: PendencyStatus): Promise<void> {
+    choose(fixture, 'status', TRANSLATIONS.en.enum.pendencyStatus[status]);
     fixture.detectChanges();
     await fixture.whenStable();
   }
@@ -163,12 +167,12 @@ describe('PendencyFormPage', () => {
     httpTesting.expectNone({ method: 'POST' });
     const text = el(fixture).textContent;
     for (const message of [
-      'Area is required',
-      'Description is required',
-      'Priority is required',
-      'Discipline is required',
-      'Registered by is required',
-      'Registered to is required',
+      'Required field',
+      'Required field',
+      'Required field',
+      'Required field',
+      'Required field',
+      'Required field',
     ]) {
       expect(text).toContain(message);
     }
@@ -186,10 +190,10 @@ describe('PendencyFormPage', () => {
     httpTesting.expectNone({ method: 'POST' });
     const text = el(fixture).textContent;
     for (const message of [
-      'Area is required',
-      'Description is required',
-      'Priority is required',
-      'Discipline is required',
+      'Required field',
+      'Required field',
+      'Required field',
+      'Required field',
     ]) {
       expect(text).toContain(message);
     }
@@ -258,7 +262,7 @@ describe('PendencyFormPage', () => {
     await submit(fixture);
 
     httpTesting.expectNone({ method: 'POST' });
-    expect(el(fixture).textContent).toContain('Finished by is required');
+    expect(el(fixture).textContent).toContain('Required field');
   });
 
   it('blocks CANCELED without the canceling date', async () => {
@@ -269,7 +273,7 @@ describe('PendencyFormPage', () => {
     await submit(fixture);
 
     httpTesting.expectNone({ method: 'POST' });
-    expect(el(fixture).textContent).toContain('Canceled at is required');
+    expect(el(fixture).textContent).toContain('Required field');
   });
 
   it('creates an OPEN pendency for the selected contract, with closure fields as null', async () => {
@@ -432,7 +436,12 @@ describe('PendencyFormPage', () => {
     await fillValid(fixture);
     await submit(fixture);
     httpTesting.expectOne({ method: 'POST', url: URL }).flush(
-      { type: 'https://punch-list/errors/business-rule', title: 'Business rule violated', status: 422, detail: 'Rule' },
+      {
+        type: 'https://punch-list/errors/business-rule',
+        title: 'Business rule violated',
+        status: 422,
+        detail: 'Rule',
+      },
       { status: 422, statusText: 'Unprocessable Entity' },
     );
     await settle(fixture);

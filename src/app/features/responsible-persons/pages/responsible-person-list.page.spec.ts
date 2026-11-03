@@ -9,6 +9,7 @@ import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { ResponsiblePersonListPage } from './responsible-person-list.page';
+import { provideI18nTesting } from '../../../../testing/i18n';
 
 const LIST_URL = (id: number) => `/api/v1/responsible-person/contract/${id}`;
 
@@ -27,6 +28,7 @@ describe('ResponsiblePersonListPage', () => {
     TestBed.configureTestingModule({
       imports: [ResponsiblePersonListPage],
       providers: [
+        provideI18nTesting(),
         provideRouter([]),
         provideHttpClient(withInterceptors([apiErrorInterceptor])),
         provideHttpClientTesting(),

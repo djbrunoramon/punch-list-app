@@ -2,10 +2,12 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, linkedSignal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiBadge, TuiPagination } from '@taiga-ui/kit';
 import { TuiBlockStatus } from '@taiga-ui/layout';
 import { ContractContext } from '../../../core/contract-context/contract-context';
+import { Language } from '../../../core/i18n/language';
 import { PageState } from '../../../shared/ui/page-state';
 import { PendenciesApi } from '../data-access/pendencies.api';
 import { PendencyStatus } from '../data-access/pendencies.models';
@@ -15,12 +17,22 @@ const PAGE_SIZE = 10;
 /** Pendencies of the selected contract (EXT-02), paginated by the server. */
 @Component({
   selector: 'app-pendency-list-page',
-  imports: [RouterLink, DatePipe, TuiButton, TuiBadge, TuiBlockStatus, TuiPagination, PageState],
+  imports: [
+    RouterLink,
+    DatePipe,
+    TuiButton,
+    TuiBadge,
+    TuiBlockStatus,
+    TuiPagination,
+    PageState,
+    TranslocoPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pendency-list.page.html',
 })
 export class PendencyListPage {
   private readonly api = inject(PendenciesApi);
+  protected readonly locale = inject(Language).locale;
   private readonly context = inject(ContractContext);
 
   protected readonly contractId = this.context.selectedId;
