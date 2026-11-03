@@ -7,7 +7,7 @@
 - Responsible person registration and editing (paginated list per contract)
 - Pendency registration and editing, with status rules: `OPEN`, `CLOSED`, `DISAPPROVED` and `CANCELED`; the "by" and "at" fields of the chosen closing status are required
 - Contract selector in the header: the dashboard, responsible persons and pendencies show the selected contract, and the choice is kept across reloads
-- English and Brazilian Portuguese (EN / PT-BR switch in the header; first visit follows the browser language). Taiga texts, dates, currency and the API error messages follow the chosen language. See [docs/i18n.md](docs/i18n.md) for the key naming standard
+- English and Brazilian Portuguese (EN / PT-BR switch in the header; first visit follows the browser language). Taiga texts, dates, currency and the API error messages follow the chosen language. See [docs/conhecimento/modulos/i18n.md](docs/conhecimento/modulos/i18n.md) for the key naming standard
 - Light and dark themes: follows the operating system until the user picks one in the header (sun/moon button); the choice is kept in `localStorage` (`tuiDark`)
 
 ## Screenshots
@@ -92,3 +92,8 @@ The API reports errors as RFC 9457 ProblemDetail (`application/problem+json`). `
 ## Note about `docs/`
 
 `docs/` contains the old published build (Angular 13) and the screenshots in `docs/img/`. The new build goes to `dist/`. Deployment is out of scope of this README.
+
+## Knowledge base
+
+Architecture decisions (ADRs), living specification, open technical debt and runbooks live in
+[docs/conhecimento](docs/conhecimento/index.md) (Portuguese, [OKF](https://github.com/GoogleCloudPlatform/open-knowledge-format) format).
