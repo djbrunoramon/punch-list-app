@@ -96,6 +96,29 @@ describe('apiErrorInterceptor', () => {
     });
   });
 
+  it('keeps status and detail when `errors` is not a list', async () => {
+    const error = await failWith({ detail: 'Unavailable', errors: {} }, 503);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error.status).toBe(503);
+    expect(error.detail).toBe('Unavailable');
+    expect(error.fieldErrors).toEqual({});
+  });
+
+  it('ignores `errors` entries without string field and message', async () => {
+    const error = await failWith(
+      {
+        detail: 'Invalid',
+        errors: [{ foo: 1 }, null, 'x', { field: 'a', message: 1 }, { field: 'b', message: 'ok' }],
+      },
+      400,
+    );
+
+    expect(error.status).toBe(400);
+    expect(error.detail).toBe('Invalid');
+    expect(error.fieldErrors).toEqual({ b: 'ok' });
+  });
+
   it('wraps unknown values', () => {
     expect(toApiError('boom')).toBeInstanceOf(ApiError);
   });

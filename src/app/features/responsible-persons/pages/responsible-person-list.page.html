@@ -3,7 +3,9 @@
   <a tuiButton size="m" routerLink="new">New responsible person</a>
 </header>
 
-@if (contractId() === null && !contractsLoading()) {
+@if (contractsError()) {
+  <app-page-state [error]="contractsError()" (retry)="reloadContracts()" />
+} @else if (contractId() === null && !contractsLoading()) {
   <tui-block-status data-testid="no-contract">
     <h4>Select a contract to see its responsible persons</h4>
     <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">Add a contract</a>

@@ -85,6 +85,20 @@ describe('ContractFormPage', () => {
     expect(el(fixture).textContent).toContain('Address is required');
   });
 
+  it('rejects whitespace-only required text without calling the API', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    type(fixture, 'numberContract', '   ');
+    type(fixture, 'description', '  ');
+    type(fixture, 'address', ' ');
+    await submit(fixture);
+
+    httpTesting.expectNone({ method: 'POST' });
+    expect(el(fixture).textContent).toContain('Contract number is required');
+    expect(el(fixture).textContent).toContain('Description is required');
+    expect(el(fixture).textContent).toContain('Address is required');
+  });
+
   it('mirrors the API length limits on the inputs (AM-07)', async () => {
     const fixture = await create();
     type(fixture, 'numberContract', 'x'.repeat(51));
@@ -124,6 +138,22 @@ describe('ContractFormPage', () => {
 
     expect(navigate).toHaveBeenCalledWith(['/contracts']);
     expect(context.reload).toHaveBeenCalled();
+  });
+
+  it('does not navigate when destroyed before the save answers', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    el(fixture)
+      .querySelector('form')
+      ?.dispatchEvent(new Event('submit', { cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve));
+    const req = httpTesting.expectOne({ method: 'POST', url: '/api/v1/contract' });
+
+    fixture.destroy();
+    req.flush(aContract({ id: 2 }), { status: 201, statusText: 'Created' });
+    await new Promise((resolve) => setTimeout(resolve));
+
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('loads the contract on /contracts/:id and updates it with PUT', async () => {

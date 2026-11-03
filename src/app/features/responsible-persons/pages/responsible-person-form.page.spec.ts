@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { provideTaiga } from '@taiga-ui/core';
 import { aContract, aResponsiblePerson } from '../../../../testing/fixtures';
+import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { ResponsiblePersonFormPage } from './responsible-person-form.page';
@@ -15,9 +16,13 @@ describe('ResponsiblePersonFormPage', () => {
   let httpTesting: HttpTestingController;
   let navigate: ReturnType<typeof vi.spyOn>;
   const selectedId = signal<number | null>(1);
+  const contractsError = signal<unknown>(undefined);
+  const reload = vi.fn();
 
   beforeEach(() => {
     selectedId.set(1);
+    contractsError.set(undefined);
+    reload.mockClear();
     TestBed.configureTestingModule({
       imports: [ResponsiblePersonFormPage],
       providers: [
@@ -27,7 +32,12 @@ describe('ResponsiblePersonFormPage', () => {
         provideTaiga(),
         {
           provide: ContractContext,
-          useValue: { selectedId, contracts: { isLoading: () => false, error: () => undefined } },
+          useValue: {
+            selectedId,
+            contracts: { isLoading: () => false },
+            error: contractsError,
+            reload,
+          },
         },
       ],
     });
@@ -90,6 +100,20 @@ describe('ResponsiblePersonFormPage', () => {
     expect(el(fixture).textContent).toContain('Department is required');
   });
 
+  it('rejects whitespace-only required text without calling the API', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    type(fixture, 'name', '   ');
+    type(fixture, 'occupation', '  ');
+    type(fixture, 'department', ' ');
+    await submit(fixture);
+
+    httpTesting.expectNone({ method: 'POST' });
+    expect(el(fixture).textContent).toContain('Name is required');
+    expect(el(fixture).textContent).toContain('Occupation is required');
+    expect(el(fixture).textContent).toContain('Department is required');
+  });
+
   it('mirrors the API length limits on the inputs and blocks longer values (AM-07)', async () => {
     const fixture = await create();
     await fillValid(fixture);
@@ -119,6 +143,60 @@ describe('ResponsiblePersonFormPage', () => {
     await settle(fixture);
 
     expect(navigate).toHaveBeenCalledWith(['/responsible-persons']);
+  });
+
+  it('does not navigate when destroyed before the save answers', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    el(fixture)
+      .querySelector('form')
+      ?.dispatchEvent(new Event('submit', { cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve));
+    const req = httpTesting.expectOne({ method: 'POST', url: URL });
+
+    fixture.destroy();
+    req.flush(aResponsiblePerson({ id: 2 }), { status: 201, statusText: 'Created' });
+    await new Promise((resolve) => setTimeout(resolve));
+
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('starts over when the selected contract changes while creating', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    await submit(fixture);
+    httpTesting
+      .expectOne({ method: 'POST', url: URL })
+      .flush(
+        { title: 'Business rule', status: 422, detail: 'Name is taken' },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
+    await settle(fixture);
+    expect(el(fixture).querySelector('[data-testid="submit-error"]')).not.toBeNull();
+
+    selectedId.set(2);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(el(fixture).querySelector<HTMLInputElement>('#name')?.value).toBe('');
+    expect(el(fixture).querySelector<HTMLInputElement>('#occupation')?.value).toBe('');
+    expect(el(fixture).querySelector<HTMLInputElement>('#department')?.value).toBe('');
+    expect(el(fixture).querySelector('[data-testid="submit-error"]')).toBeNull();
+
+    type(fixture, 'name', 'Ana Dias');
+    type(fixture, 'occupation', 'Planner');
+    type(fixture, 'department', 'Quality');
+    await submit(fixture);
+
+    const req = httpTesting.expectOne({ method: 'POST', url: URL });
+    expect(req.request.body).toEqual({
+      idContract: 2,
+      name: 'Ana Dias',
+      occupation: 'Planner',
+      department: 'Quality',
+    });
+    req.flush(aResponsiblePerson({ id: 3 }), { status: 201, statusText: 'Created' });
+    await settle(fixture);
   });
 
   it('asks to select a contract instead of showing the form when creating without one', async () => {
@@ -191,5 +269,17 @@ describe('ResponsiblePersonFormPage', () => {
       'Responsible person 99 not found',
     );
     expect(el(fixture).querySelector('form')).toBeNull();
+  });
+
+  it('shows the contracts error, with a retry, instead of the "no contract" notice', async () => {
+    selectedId.set(null);
+    contractsError.set(new ApiError(503, 'Unavailable', 'Contracts are down'));
+    const fixture = await create();
+    expect(el(fixture).querySelector('[data-testid="no-contract"]')).toBeNull();
+    const alert = el(fixture).querySelector('[data-testid="page-error"]');
+    expect(alert?.textContent).toContain('Contracts are down');
+
+    alert?.querySelector('button')?.click();
+    expect(reload).toHaveBeenCalledTimes(1);
   });
 });

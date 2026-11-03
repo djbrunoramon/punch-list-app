@@ -25,6 +25,7 @@ export class PendencyListPage {
 
   protected readonly contractId = this.context.selectedId;
   protected readonly contractsLoading = this.context.contracts.isLoading;
+  protected readonly contractsError = this.context.error;
 
   protected readonly statusAppearance: Readonly<Record<PendencyStatus, string>> = {
     OPEN: 'info',
@@ -58,4 +59,8 @@ export class PendencyListPage {
   protected readonly totalPages = computed(() =>
     this.pendencies.hasValue() ? this.pendencies.value().page.totalPages : 0,
   );
+
+  protected reloadContracts(): void {
+    this.context.reload();
+  }
 }

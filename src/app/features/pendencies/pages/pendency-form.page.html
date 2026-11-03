@@ -2,7 +2,9 @@
   <h1 class="tui-text_h4">{{ isEdit() ? 'Edit pendency' : 'New pendency' }}</h1>
 </header>
 
-@if (contractId() === null && !isEdit() && !contractsLoading()) {
+@if (contractsError() && !isEdit()) {
+  <app-page-state [error]="contractsError()" (retry)="reloadContracts()" />
+} @else if (contractId() === null && !isEdit() && !contractsLoading()) {
   <tui-block-status data-testid="no-contract">
     <h4>Select a contract before registering a pendency</h4>
     <a tuiButton size="s" appearance="secondary" routerLink="/contracts/new">Add a contract</a>

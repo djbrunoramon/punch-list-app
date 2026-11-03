@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTaiga } from '@taiga-ui/core';
 import { aPage, aResponsiblePerson } from '../../../../testing/fixtures';
+import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { ResponsiblePersonListPage } from './responsible-person-list.page';
@@ -14,10 +15,14 @@ const LIST_URL = (id: number) => `/api/v1/responsible-person/contract/${id}`;
 describe('ResponsiblePersonListPage', () => {
   let httpTesting: HttpTestingController;
   const selectedId = signal<number | null>(1);
+  const contractsError = signal<unknown>(undefined);
+  const reload = vi.fn();
   const contractsLoading = signal(false);
 
   beforeEach(() => {
     selectedId.set(1);
+    contractsError.set(undefined);
+    reload.mockClear();
     contractsLoading.set(false);
     TestBed.configureTestingModule({
       imports: [ResponsiblePersonListPage],
@@ -30,7 +35,9 @@ describe('ResponsiblePersonListPage', () => {
           provide: ContractContext,
           useValue: {
             selectedId,
-            contracts: { isLoading: contractsLoading, error: () => undefined },
+            contracts: { isLoading: contractsLoading },
+            error: contractsError,
+            reload,
           },
         },
       ],
@@ -173,5 +180,17 @@ describe('ResponsiblePersonListPage', () => {
     const fixture = await render();
     expect(el(fixture).querySelector('[data-testid="no-contract"]')).toBeNull();
     expect(el(fixture).querySelector('[data-testid="page-loading"]')).not.toBeNull();
+  });
+
+  it('shows the contracts error, with a retry, instead of the "no contract" notice', async () => {
+    selectedId.set(null);
+    contractsError.set(new ApiError(503, 'Unavailable', 'Contracts are down'));
+    const fixture = await render();
+    expect(el(fixture).querySelector('[data-testid="no-contract"]')).toBeNull();
+    const alert = el(fixture).querySelector('[data-testid="page-error"]');
+    expect(alert?.textContent).toContain('Contracts are down');
+
+    alert?.querySelector('button')?.click();
+    expect(reload).toHaveBeenCalledTimes(1);
   });
 });

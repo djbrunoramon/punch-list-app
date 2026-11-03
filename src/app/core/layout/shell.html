@@ -21,6 +21,9 @@
       <tui-loader size="s" />
     } @else if (context.contracts.error()) {
       <span class="selector-error" role="status">Contracts unavailable</span>
+      <button tuiButton type="button" size="s" appearance="secondary" (click)="context.reload()">
+        Retry
+      </button>
     } @else if (context.contracts.hasValue() && context.contracts.value().length) {
       <tui-textfield tuiTextfieldSize="s" [stringify]="stringify" [identityMatcher]="sameContract">
         <label tuiLabel for="contract-selector">Contract</label>

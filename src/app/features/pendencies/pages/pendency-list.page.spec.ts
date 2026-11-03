@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTaiga } from '@taiga-ui/core';
 import { aPage, aPendency } from '../../../../testing/fixtures';
+import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PendencyListPage } from './pendency-list.page';
@@ -14,10 +15,14 @@ const LIST_URL = (id: number) => `/api/v1/pendency/contract/${id}`;
 describe('PendencyListPage', () => {
   let httpTesting: HttpTestingController;
   const selectedId = signal<number | null>(1);
+  const contractsError = signal<unknown>(undefined);
+  const reload = vi.fn();
   const contractsLoading = signal(false);
 
   beforeEach(() => {
     selectedId.set(1);
+    contractsError.set(undefined);
+    reload.mockClear();
     contractsLoading.set(false);
     TestBed.configureTestingModule({
       imports: [PendencyListPage],
@@ -30,7 +35,9 @@ describe('PendencyListPage', () => {
           provide: ContractContext,
           useValue: {
             selectedId,
-            contracts: { isLoading: contractsLoading, error: () => undefined },
+            contracts: { isLoading: contractsLoading },
+            error: contractsError,
+            reload,
           },
         },
       ],
@@ -159,6 +166,22 @@ describe('PendencyListPage', () => {
     await fixture.whenStable();
   });
 
+  it('cancels the pending request of the previous contract and shows only the new data', async () => {
+    const fixture = await render();
+    const stale = expectList(1); // contract A stays pending
+
+    selectedId.set(2);
+    fixture.detectChanges();
+
+    expect(stale.cancelled).toBe(true);
+    expectList(2).flush(aPage([aPendency({ id: 20, tag: 'TAG-B' })]));
+    await fixture.whenStable();
+
+    const rows = el(fixture).querySelectorAll('tbody tr');
+    expect(rows.length).toBe(1);
+    expect(rows[0].textContent).toContain('TAG-B');
+  });
+
   it('invites to register a contract when none is selected, without calling the API', async () => {
     selectedId.set(null);
     const fixture = await render();
@@ -174,5 +197,17 @@ describe('PendencyListPage', () => {
     const fixture = await render();
     expect(el(fixture).querySelector('[data-testid="no-contract"]')).toBeNull();
     expect(el(fixture).querySelector('[data-testid="page-loading"]')).not.toBeNull();
+  });
+
+  it('shows the contracts error, with a retry, instead of the "no contract" notice', async () => {
+    selectedId.set(null);
+    contractsError.set(new ApiError(503, 'Unavailable', 'Contracts are down'));
+    const fixture = await render();
+    expect(el(fixture).querySelector('[data-testid="no-contract"]')).toBeNull();
+    const alert = el(fixture).querySelector('[data-testid="page-error"]');
+    expect(alert?.textContent).toContain('Contracts are down');
+
+    alert?.querySelector('button')?.click();
+    expect(reload).toHaveBeenCalledTimes(1);
   });
 });

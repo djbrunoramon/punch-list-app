@@ -2,10 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   linkedSignal,
-  signal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { FormField, FormRoot, applyWhen, form, maxLength, required } from '@angular/forms/signals';
@@ -18,6 +18,7 @@ import { toApiError } from '../../../core/api-error/api-error';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PageState } from '../../../shared/ui/page-state';
 import { fromApiDateTime, toApiDateTime } from '../../../shared/util/date-time';
+import { requiredText } from '../../../shared/util/required-text';
 import { toServerFieldErrors } from '../../../shared/util/server-errors';
 import { ResponsiblePersonsApi } from '../../responsible-persons/data-access/responsible-persons.api';
 import { PendenciesApi } from '../data-access/pendencies.api';
@@ -139,6 +140,10 @@ export class PendencyFormPage {
   private readonly context = inject(ContractContext);
   private readonly router = inject(Router);
 
+  /** Set on destroy: a response that arrives later must not navigate nor touch signals. */
+  private destroyed = false;
+  private readonly destroyHook = inject(DestroyRef).onDestroy(() => (this.destroyed = true));
+
   /** Route param (`withComponentInputBinding`); absent on `/pendencies/new`. */
   readonly id = input<string>();
 
@@ -151,6 +156,7 @@ export class PendencyFormPage {
   protected readonly statuses = PENDENCY_STATUSES;
   protected readonly isEdit = computed(() => this.pendencyId() !== null);
   protected readonly contractsLoading = this.context.contracts.isLoading;
+  protected readonly contractsError = this.context.error;
 
   protected readonly pendency = rxResource({
     params: () => this.pendencyId() ?? undefined,
@@ -200,7 +206,11 @@ export class PendencyFormPage {
   protected readonly status = computed(() => this.model().status);
 
   /** Non-field error of the last submit (ProblemDetail `detail`, e.g. the 422 business rule). */
-  protected readonly submitError = signal<string | null>(null);
+  /** Non-field error of the last submit; cleared when the contract changes. */
+  protected readonly submitError = linkedSignal<number | null, string | null>({
+    source: this.contractId,
+    computation: () => null,
+  });
 
   protected readonly stringifyPerson = (person: PersonSummary | null): string => person?.name ?? '';
   protected readonly samePerson = (a: PersonSummary | null, b: PersonSummary | null): boolean =>
@@ -209,14 +219,14 @@ export class PendencyFormPage {
   protected readonly form = form(
     this.model,
     (path) => {
-      required(path.areaIdentification, { message: 'Area is required' });
+      requiredText(path.areaIdentification, { message: 'Area is required' });
       maxLength(path.areaIdentification, PENDENCY_LIMITS.areaIdentification);
       maxLength(path.tag, PENDENCY_LIMITS.tag);
-      required(path.description, { message: 'Description is required' });
+      requiredText(path.description, { message: 'Description is required' });
       maxLength(path.description, PENDENCY_LIMITS.description);
-      required(path.priority, { message: 'Priority is required' });
+      requiredText(path.priority, { message: 'Priority is required' });
       maxLength(path.priority, PENDENCY_LIMITS.priority);
-      required(path.discipline, { message: 'Discipline is required' });
+      requiredText(path.discipline, { message: 'Discipline is required' });
       maxLength(path.discipline, PENDENCY_LIMITS.discipline);
       required(path.registeredBy, { message: 'Registered by is required' });
       required(path.registeredTo, { message: 'Registered to is required' });
@@ -263,9 +273,15 @@ export class PendencyFormPage {
               id === null ? this.api.create(request) : this.api.update(id, request),
             );
           } catch (error) {
+            if (this.destroyed) {
+              return undefined;
+            }
             const apiError = toApiError(error);
             this.submitError.set(apiError.detail);
             return toServerFieldErrors(tree, apiError);
+          }
+          if (this.destroyed) {
+            return undefined;
           }
           await this.router.navigate(['/pendencies']);
           return undefined;
@@ -277,5 +293,9 @@ export class PendencyFormPage {
   protected reload(): void {
     this.pendency.reload();
     this.peopleResource.reload();
+  }
+
+  protected reloadContracts(): void {
+    this.context.reload();
   }
 }

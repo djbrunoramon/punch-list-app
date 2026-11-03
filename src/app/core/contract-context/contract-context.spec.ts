@@ -59,4 +59,22 @@ describe('ContractContext', () => {
     const context = await loaded([]);
     expect(context.selected()).toBeNull();
   });
+
+  it('exposes the load error and recovers on reload', async () => {
+    const context = TestBed.inject(ContractContext);
+    TestBed.tick();
+    httpTesting
+      .expectOne('/api/v1/contract')
+      .flush({ detail: 'Down' }, { status: 503, statusText: 'Unavailable' });
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(context.error()).toBeDefined();
+    expect(context.selected()).toBeNull();
+
+    context.reload();
+    TestBed.tick();
+    httpTesting.expectOne('/api/v1/contract').flush([aContract({ id: 1 })]);
+    await TestBed.inject(ApplicationRef).whenStable();
+    expect(context.error()).toBeUndefined();
+    expect(context.selectedId()).toBe(1);
+  });
 });

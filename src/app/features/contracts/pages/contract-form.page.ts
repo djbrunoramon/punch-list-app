@@ -2,13 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   linkedSignal,
   signal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { FormField, FormRoot, form, maxLength, min, required } from '@angular/forms/signals';
+import { FormField, FormRoot, form, maxLength, min } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { TuiButton, TuiError, TuiInput, TuiNotification } from '@taiga-ui/core';
 import { TuiTextarea } from '@taiga-ui/kit';
@@ -17,6 +18,7 @@ import { firstValueFrom } from 'rxjs';
 import { toApiError } from '../../../core/api-error/api-error';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { fromApiDateTime, toApiDateTime } from '../../../shared/util/date-time';
+import { requiredText } from '../../../shared/util/required-text';
 import { toServerFieldErrors } from '../../../shared/util/server-errors';
 import { PageState } from '../../../shared/ui/page-state';
 import { ContractsApi } from '../data-access/contracts.api';
@@ -86,6 +88,10 @@ export class ContractFormPage {
   private readonly context = inject(ContractContext);
   private readonly router = inject(Router);
 
+  /** Set on destroy: a response that arrives later must not navigate nor touch signals. */
+  private destroyed = false;
+  private readonly destroyHook = inject(DestroyRef).onDestroy(() => (this.destroyed = true));
+
   /** Route param (`withComponentInputBinding`); absent on `/contracts/new`. */
   readonly id = input<string>();
 
@@ -112,11 +118,11 @@ export class ContractFormPage {
   protected readonly form = form(
     this.model,
     (path) => {
-      required(path.numberContract, { message: 'Contract number is required' });
+      requiredText(path.numberContract, { message: 'Contract number is required' });
       maxLength(path.numberContract, CONTRACT_LIMITS.numberContract);
-      required(path.description, { message: 'Description is required' });
+      requiredText(path.description, { message: 'Description is required' });
       maxLength(path.description, CONTRACT_LIMITS.description);
-      required(path.address, { message: 'Address is required' });
+      requiredText(path.address, { message: 'Address is required' });
       maxLength(path.address, CONTRACT_LIMITS.address);
       min(path.estimatedAt, 0, { message: 'Must be zero or more' });
     },
@@ -131,11 +137,17 @@ export class ContractFormPage {
               id === null ? this.api.create(request) : this.api.update(id, request),
             );
           } catch (error) {
+            if (this.destroyed) {
+              return undefined;
+            }
             const apiError = toApiError(error);
             this.submitError.set(apiError.detail);
             return toServerFieldErrors(tree, apiError);
           }
-          this.context.reload();
+          this.context.reload(); // the save succeeded, so the selector must refresh either way
+          if (this.destroyed) {
+            return undefined;
+          }
           await this.router.navigate(['/contracts']);
           return undefined;
         },

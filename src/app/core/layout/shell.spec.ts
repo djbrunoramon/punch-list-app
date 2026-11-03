@@ -58,4 +58,28 @@ describe('Shell', () => {
     expect(el.querySelector('[data-testid="contract-selector"]')).toBeNull();
     expect(el.textContent).toContain('Add a contract');
   });
+
+  it('offers a retry when the contracts fail to load', async () => {
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    httpTesting
+      .expectOne('/api/v1/contract')
+      .flush({ detail: 'Down' }, { status: 503, statusText: 'Unavailable' });
+    await fixture.whenStable();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Contracts unavailable');
+    const retry = Array.from(el.querySelectorAll('button')).find(
+      (b) => b.textContent?.trim() === 'Retry',
+    );
+    expect(retry).toBeDefined();
+
+    retry!.click();
+    fixture.detectChanges();
+    httpTesting.expectOne('/api/v1/contract').flush([aContract({ id: 1 })]);
+    await fixture.whenStable();
+
+    expect(el.textContent).not.toContain('Contracts unavailable');
+    expect(el.querySelector('[data-testid="contract-selector"]')).not.toBeNull();
+  });
 });

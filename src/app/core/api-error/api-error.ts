@@ -35,6 +35,15 @@ function isProblemDetail(value: unknown): value is ProblemDetail {
   return typeof value === 'object' && value !== null && ('detail' in value || 'title' in value);
 }
 
+function isFieldError(value: unknown): value is { field: string; message: string } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as Record<string, unknown>)['field'] === 'string' &&
+    typeof (value as Record<string, unknown>)['message'] === 'string'
+  );
+}
+
 /** Converts anything an HTTP call can fail with into an `ApiError`. Never exposes raw bodies. */
 export function toApiError(error: unknown): ApiError {
   if (error instanceof ApiError) {
@@ -47,8 +56,9 @@ export function toApiError(error: unknown): ApiError {
   const body: unknown = error.error;
   const problem = isProblemDetail(body) ? body : undefined;
   const fieldErrors: Record<string, string> = {};
-  for (const item of problem?.errors ?? []) {
-    if (typeof item?.field === 'string' && typeof item?.message === 'string') {
+  const items: readonly unknown[] = Array.isArray(problem?.errors) ? problem.errors : [];
+  for (const item of items) {
+    if (isFieldError(item)) {
       fieldErrors[item.field] ??= item.message;
     }
   }

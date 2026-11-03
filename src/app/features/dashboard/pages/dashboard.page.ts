@@ -37,6 +37,7 @@ export class DashboardPage {
 
   protected readonly contractId = this.context.selectedId;
   protected readonly contractsLoading = this.context.contracts.isLoading;
+  protected readonly contractsError = this.context.error;
 
   protected readonly statuses = PENDENCY_STATUSES;
   /** Status the bars are filtered by; edited through the select. */
@@ -86,4 +87,8 @@ export class DashboardPage {
         .map((p) => `${p.priority}: ${p.quantity}`)
         .join(', '),
   );
+
+  protected reloadContracts(): void {
+    this.context.reload();
+  }
 }

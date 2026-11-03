@@ -11,6 +11,7 @@ import {
   aPersonSummary,
   aResponsiblePerson,
 } from '../../../../testing/fixtures';
+import { ApiError } from '../../../core/api-error/api-error';
 import { apiErrorInterceptor } from '../../../core/api-error/api-error.interceptor';
 import { ContractContext } from '../../../core/contract-context/contract-context';
 import { PendencyFormPage } from './pendency-form.page';
@@ -27,9 +28,13 @@ describe('PendencyFormPage', () => {
   let httpTesting: HttpTestingController;
   let navigate: ReturnType<typeof vi.spyOn>;
   const selectedId = signal<number | null>(1);
+  const contractsError = signal<unknown>(undefined);
+  const reload = vi.fn();
 
   beforeEach(() => {
     selectedId.set(1);
+    contractsError.set(undefined);
+    reload.mockClear();
     TestBed.configureTestingModule({
       imports: [PendencyFormPage],
       providers: [
@@ -39,7 +44,12 @@ describe('PendencyFormPage', () => {
         provideTaiga(),
         {
           provide: ContractContext,
-          useValue: { selectedId, contracts: { isLoading: () => false, error: () => undefined } },
+          useValue: {
+            selectedId,
+            contracts: { isLoading: () => false },
+            error: contractsError,
+            reload,
+          },
         },
       ],
     });
@@ -159,6 +169,27 @@ describe('PendencyFormPage', () => {
       'Discipline is required',
       'Registered by is required',
       'Registered to is required',
+    ]) {
+      expect(text).toContain(message);
+    }
+  });
+
+  it('rejects whitespace-only required text without calling the API', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    type(fixture, 'areaIdentification', '   ');
+    type(fixture, 'description', '  ');
+    type(fixture, 'priority', ' ');
+    type(fixture, 'discipline', '   ');
+    await submit(fixture);
+
+    httpTesting.expectNone({ method: 'POST' });
+    const text = el(fixture).textContent;
+    for (const message of [
+      'Area is required',
+      'Description is required',
+      'Priority is required',
+      'Discipline is required',
     ]) {
       expect(text).toContain(message);
     }
@@ -324,6 +355,22 @@ describe('PendencyFormPage', () => {
     await settle(fixture);
   });
 
+  it('does not navigate when destroyed before the save answers', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    el(fixture)
+      .querySelector('form')
+      ?.dispatchEvent(new Event('submit', { cancelable: true }));
+    await nextTick();
+    const req = httpTesting.expectOne({ method: 'POST', url: URL });
+
+    fixture.destroy();
+    req.flush(aPendency({ id: 2 }), { status: 201, statusText: 'Created' });
+    await nextTick();
+
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   it('asks to select a contract instead of showing the form when creating without one', async () => {
     selectedId.set(null);
     const fixture = TestBed.createComponent(PendencyFormPage);
@@ -378,6 +425,26 @@ describe('PendencyFormPage', () => {
       'Status CLOSED requires finishedBy and finishedAt',
     );
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('clears the business rule error when the selected contract changes while creating', async () => {
+    const fixture = await create();
+    await fillValid(fixture);
+    await submit(fixture);
+    httpTesting.expectOne({ method: 'POST', url: URL }).flush(
+      { type: 'https://punch-list/errors/business-rule', title: 'Business rule violated', status: 422, detail: 'Rule' },
+      { status: 422, statusText: 'Unprocessable Entity' },
+    );
+    await settle(fixture);
+    expect(el(fixture).querySelector('[data-testid="submit-error"]')).not.toBeNull();
+
+    selectedId.set(2);
+    fixture.detectChanges();
+    flushPeople(2);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(el(fixture).querySelector('[data-testid="submit-error"]')).toBeNull();
   });
 
   it('shows server field errors from a 400 ProblemDetail next to the field', async () => {
@@ -435,5 +502,19 @@ describe('PendencyFormPage', () => {
 
     expect((field(fixture, 'description') as HTMLTextAreaElement).value).toBe(payload);
     expect(el(fixture).querySelector('img')).toBeNull();
+  });
+
+  it('shows the contracts error, with a retry, instead of the "no contract" notice', async () => {
+    selectedId.set(null);
+    contractsError.set(new ApiError(503, 'Unavailable', 'Contracts are down'));
+    const fixture = TestBed.createComponent(PendencyFormPage);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(el(fixture).querySelector('[data-testid="no-contract"]')).toBeNull();
+    const alert = el(fixture).querySelector('[data-testid="page-error"]');
+    expect(alert?.textContent).toContain('Contracts are down');
+
+    alert?.querySelector('button')?.click();
+    expect(reload).toHaveBeenCalledTimes(1);
   });
 });

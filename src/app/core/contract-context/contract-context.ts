@@ -25,6 +25,9 @@ export class ContractContext {
   /** All contracts (GET /api/v1/contract). */
   readonly contracts = rxResource({ stream: () => this.api.list() });
 
+  /** Why the contracts could not be loaded (undefined while loading or loaded). */
+  readonly error = computed(() => this.contracts.error());
+
   private readonly list = computed(() => (this.contracts.hasValue() ? this.contracts.value() : []));
 
   /** Writable: falls back to the stored id, then to the first contract, when the list changes. */

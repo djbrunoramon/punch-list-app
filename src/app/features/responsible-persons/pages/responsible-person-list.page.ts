@@ -24,6 +24,7 @@ export class ResponsiblePersonListPage {
 
   protected readonly contractId = this.context.selectedId;
   protected readonly contractsLoading = this.context.contracts.isLoading;
+  protected readonly contractsError = this.context.error;
 
   /** Zero-based; goes back to the first page whenever the contract changes. */
   protected readonly page = linkedSignal<number | null, number>({
@@ -50,4 +51,8 @@ export class ResponsiblePersonListPage {
   protected readonly totalPages = computed(() =>
     this.people.hasValue() ? this.people.value().page.totalPages : 0,
   );
+
+  protected reloadContracts(): void {
+    this.context.reload();
+  }
 }
